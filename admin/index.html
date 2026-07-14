@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#111827">
+<title>The Bike Mart Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Urdu:wght@400;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:Roboto,sans-serif;background:#f5f6f8;color:#111827}.urdu{font-family:'Noto Sans Urdu',sans-serif}.modal{display:none;position:fixed;inset:0;z-index:60;background:#030712c7;backdrop-filter:blur(7px);padding:16px;align-items:center;justify-content:center}.modal.open{display:flex}.toast{transform:translate(-50%,120px);opacity:0;transition:.25s}.toast.show{transform:translate(-50%,0);opacity:1}.switch input:checked+span{background:#16a34a}.switch span:after{content:'';position:absolute;width:20px;height:20px;left:2px;top:2px;background:white;border-radius:99px;transition:.2s;box-shadow:0 1px 4px #0003}.switch input:checked+span:after{transform:translateX(20px)}
+</style>
+</head>
+<body>
+<section id="loginView" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-950 via-gray-900 to-red-950">
+ <div class="w-full max-w-md bg-white rounded-[2rem] p-8 shadow-2xl">
+  <div class="w-16 h-16 rounded-2xl bg-red-600 text-white flex items-center justify-center text-2xl"><i class="fa-solid fa-motorcycle"></i></div>
+  <p class="mt-6 text-[10px] font-black uppercase tracking-[.25em] text-red-600">Private management</p>
+  <h1 class="text-3xl font-black italic uppercase">The Bike Mart Admin</h1>
+  <p class="text-sm text-gray-500 mt-2">Sign in with the admin email and password you created in Supabase.</p>
+  <form id="loginForm" class="mt-7 space-y-4">
+   <input id="email" type="email" required autocomplete="email" placeholder="Admin email" class="w-full rounded-2xl border-2 border-gray-200 px-4 py-3.5 outline-none focus:border-red-600">
+   <input id="password" type="password" required autocomplete="current-password" placeholder="Password" class="w-full rounded-2xl border-2 border-gray-200 px-4 py-3.5 outline-none focus:border-red-600">
+   <button id="loginBtn" class="w-full rounded-2xl bg-gray-950 hover:bg-red-600 text-white py-4 font-black uppercase tracking-widest text-xs"><i class="fa-solid fa-right-to-bracket mr-2"></i>Sign In</button>
+  </form>
+  <p id="loginError" class="hidden mt-4 rounded-xl bg-red-50 border border-red-100 text-red-700 px-4 py-3 text-sm font-bold"></p>
+ </div>
+</section>
+
+<div id="adminView" class="hidden">
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b shadow-sm"><div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center gap-3">
+ <div><p class="text-[9px] font-black uppercase tracking-[.24em] text-red-600">The Bike Mart</p><h1 class="text-xl sm:text-2xl font-black italic uppercase">Admin Dashboard</h1></div>
+ <div class="flex gap-2"><a href="../" target="_blank" class="hidden sm:block rounded-xl border px-4 py-2.5 text-xs font-black">View Store</a><button onclick="logout()" class="rounded-xl bg-gray-950 hover:bg-red-600 text-white px-4 py-2.5 text-xs font-black">Logout</button></div>
+</div></header>
+<main class="max-w-7xl mx-auto px-4 py-7">
+ <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+  <div class="bg-white rounded-3xl p-5 border shadow-sm"><p class="text-xs text-gray-500">Total</p><strong id="sTotal" class="text-3xl font-black">0</strong></div>
+  <div class="bg-white rounded-3xl p-5 border shadow-sm"><p class="text-xs text-gray-500">In Stock</p><strong id="sStock" class="text-3xl font-black text-green-600">0</strong></div>
+  <div class="bg-white rounded-3xl p-5 border shadow-sm"><p class="text-xs text-gray-500">Featured</p><strong id="sFeatured" class="text-3xl font-black text-amber-600">0</strong></div>
+  <div class="bg-white rounded-3xl p-5 border shadow-sm"><p class="text-xs text-gray-500">Hidden</p><strong id="sHidden" class="text-3xl font-black text-gray-500">0</strong></div>
+ </div>
+ <section class="bg-white rounded-[2rem] border shadow-sm overflow-hidden">
+  <div class="p-5 sm:p-6 border-b flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+   <div><p class="text-[9px] font-black uppercase tracking-[.22em] text-red-600">Product management</p><h2 class="text-2xl font-black italic uppercase">Your Products</h2></div>
+   <div class="flex flex-col sm:flex-row gap-3"><input id="search" oninput="render()" placeholder="Search products..." class="rounded-xl border px-4 py-3 outline-none focus:border-red-600"><button onclick="openForm()" class="rounded-xl bg-red-600 text-white px-5 py-3 font-black text-xs uppercase"><i class="fa-solid fa-plus mr-2"></i>Add Product</button></div>
+  </div>
+  <div id="loading" class="p-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin text-2xl text-red-600"></i><p class="mt-3 font-bold text-sm">Loading products...</p></div>
+  <div id="list" class="hidden divide-y"></div>
+  <div id="empty" class="hidden p-14 text-center"><i class="fa-regular fa-folder-open text-4xl text-gray-300"></i><h3 class="font-black text-xl mt-4">No products found</h3></div>
+ </section>
+</main>
+</div>
+
+<div id="modal" class="modal" onclick="if(event.target.id==='modal')closeForm()">
+ <div class="w-full max-w-3xl max-h-[94vh] overflow-y-auto bg-white rounded-[2rem] shadow-2xl">
+  <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10"><div><p class="text-[9px] font-black uppercase tracking-[.22em] text-red-600">Product editor</p><h2 id="formTitle" class="text-2xl font-black italic uppercase">Add Product</h2></div><button onclick="closeForm()" class="w-10 h-10 rounded-full bg-gray-100"><i class="fa-solid fa-xmark"></i></button></div>
+  <form id="productForm" class="p-6 space-y-5">
+   <input id="pid" type="hidden"><input id="oldImage" type="hidden"><input id="oldOriginal" type="hidden">
+   <div class="grid sm:grid-cols-2 gap-4">
+    <input id="pname" required placeholder="English product name *" class="rounded-xl border px-4 py-3 outline-none focus:border-red-600">
+    <input id="purdu" dir="rtl" placeholder="اردو نام" class="urdu rounded-xl border px-4 py-3 outline-none focus:border-red-600">
+    <input id="pprice" type="number" min="0" required placeholder="Price (Rs.) *" class="rounded-xl border px-4 py-3 outline-none focus:border-red-600">
+    <input id="psort" type="number" value="0" placeholder="Sort order" class="rounded-xl border px-4 py-3 outline-none focus:border-red-600">
+    <select id="pcat" required class="rounded-xl border bg-white px-4 py-3"><option value="">Choose category *</option><option>Body Parts</option><option>Engine Parts</option><option>Fancy Parts</option><option>Nut & Bolts</option></select>
+    <select id="pbrand" required class="rounded-xl border bg-white px-4 py-3"><option value="">Choose brand *</option><option>KAI CHI</option><option>AUTO MAX</option><option>CRLF</option><option>TTR</option><option>SAGA</option><option>CMX</option><option>STF</option><option>Miscellaneous</option></select>
+   </div>
+   <textarea id="pdesc" rows="3" placeholder="Description" class="w-full rounded-xl border px-4 py-3 outline-none focus:border-red-600"></textarea>
+   <div class="rounded-2xl border bg-gray-50 p-4 flex flex-col sm:flex-row gap-4">
+    <div class="w-full sm:w-40 h-40 rounded-2xl bg-white border flex items-center justify-center overflow-hidden"><img id="preview" class="hidden max-w-full max-h-full object-contain"><div id="noPreview" class="text-center text-gray-400"><i class="fa-regular fa-image text-3xl"></i><p class="text-[10px] mt-2 font-bold">No image</p></div></div>
+    <div class="flex-1"><label class="text-[10px] font-black uppercase tracking-wider text-gray-500">Product Photo</label><input id="pimage" type="file" accept="image/*" capture="environment" onchange="previewImage()" class="mt-3 block w-full text-sm text-gray-500 file:rounded-xl file:border-0 file:bg-gray-950 file:text-white file:px-4 file:py-2.5"><p class="text-xs text-gray-500 mt-3">You can take a new photo from your phone. Automatic professional cleanup will be added in the PhotoRoom stage.</p></div>
+   </div>
+   <div class="grid sm:grid-cols-3 gap-3">
+    <label class="rounded-2xl border p-4 flex justify-between items-center"><div><b class="text-sm">In Stock</b><p class="text-[10px] text-gray-500">Available to order</p></div><span class="switch relative"><input id="pstock" type="checkbox" checked class="sr-only"><span class="relative block w-11 h-6 rounded-full bg-gray-300"></span></span></label>
+    <label class="rounded-2xl border p-4 flex justify-between items-center"><div><b class="text-sm">Featured</b><p class="text-[10px] text-gray-500">Show first</p></div><span class="switch relative"><input id="pfeatured" type="checkbox" class="sr-only"><span class="relative block w-11 h-6 rounded-full bg-gray-300"></span></span></label>
+    <label class="rounded-2xl border p-4 flex justify-between items-center"><div><b class="text-sm">Visible</b><p class="text-[10px] text-gray-500">Show on website</p></div><span class="switch relative"><input id="pactive" type="checkbox" checked class="sr-only"><span class="relative block w-11 h-6 rounded-full bg-gray-300"></span></span></label>
+   </div>
+   <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 border-t pt-5"><button type="button" onclick="closeForm()" class="rounded-xl border px-5 py-3 font-black text-xs uppercase">Cancel</button><button id="saveBtn" class="rounded-xl bg-red-600 text-white px-6 py-3 font-black text-xs uppercase"><i class="fa-solid fa-floppy-disk mr-2"></i>Save Product</button></div>
+  </form>
+ </div>
+</div>
+<div id="toast" class="toast fixed z-[100] left-1/2 bottom-6 rounded-full bg-gray-950 text-white px-5 py-3 shadow-2xl text-xs font-bold"><span id="toastText">Saved</span></div>
+<script>
+const SUPABASE_URL='https://lijbrfnczlcttpnmlrzb.supabase.co',SUPABASE_KEY='sb_publishable_snbXhGoPHxJ1BD2-t0bSaA_94Krul0p',ADMIN_USER_ID='aeba949c-1880-4288-94a5-78b8fa1c0ea7',BUCKET='product-images';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);let products=[];
+const $=id=>document.getElementById(id), money=v=>`Rs. ${Number(v||0).toLocaleString('en-PK')}`;
+const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+function toast(m){$('toastText').textContent=m;$('toast').classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('show'),2800)}
+async function authUser(user){if(!user||user.id!==ADMIN_USER_ID){await sb.auth.signOut();$('loginError').textContent='This account is not authorized for The Bike Mart admin.';$('loginError').classList.remove('hidden');return}$('loginView').classList.add('hidden');$('adminView').classList.remove('hidden');await load()}
+$('loginForm').onsubmit=async e=>{e.preventDefault();$('loginError').classList.add('hidden');$('loginBtn').disabled=true;const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});$('loginBtn').disabled=false;if(error){$('loginError').textContent=error.message;$('loginError').classList.remove('hidden');return}await authUser(data.user)};
+async function logout(){await sb.auth.signOut();location.reload()}
+async function init(){const {data:{session}}=await sb.auth.getSession();if(session)await authUser(session.user)}
+async function load(){const {data,error}=await sb.from('products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});$('loading').classList.add('hidden');if(error){toast('Load failed: '+error.message);return}products=data||[];$('sTotal').textContent=products.length;$('sStock').textContent=products.filter(x=>x.in_stock).length;$('sFeatured').textContent=products.filter(x=>x.featured).length;$('sHidden').textContent=products.filter(x=>!x.is_active).length;render()}
+function render(){const q=$('search').value.toLowerCase().trim(),arr=products.filter(p=>[p.name,p.name_urdu,p.brand,p.category].some(v=>String(v||'').toLowerCase().includes(q)));$('list').classList.toggle('hidden',!arr.length);$('empty').classList.toggle('hidden',!!arr.length);$('list').innerHTML=arr.map(p=>`<article class="p-4 sm:p-5 flex flex-col md:flex-row md:items-center gap-4 hover:bg-gray-50"><div class="w-full md:w-24 h-36 md:h-24 rounded-2xl bg-gray-100 flex items-center justify-center overflow-hidden">${p.image_url?`<img src="${esc(p.image_url)}" class="max-w-full max-h-full object-contain">`:'<i class="fa-regular fa-image text-3xl text-gray-300"></i>'}</div><div class="flex-1 min-w-0"><div class="flex gap-2 flex-wrap"><span class="rounded-full px-2.5 py-1 text-[9px] font-black ${p.in_stock?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${p.in_stock?'IN STOCK':'OUT OF STOCK'}</span>${p.featured?'<span class="rounded-full bg-amber-100 text-amber-700 px-2.5 py-1 text-[9px] font-black">FEATURED</span>':''}${!p.is_active?'<span class="rounded-full bg-gray-200 text-gray-600 px-2.5 py-1 text-[9px] font-black">HIDDEN</span>':''}</div><h3 class="font-black uppercase text-lg mt-2">${esc(p.name)}</h3><p class="urdu text-gray-500 text-sm">${esc(p.name_urdu)}</p><p class="text-xs text-gray-400 mt-1">${esc(p.brand)} • ${esc(p.category)}</p></div><div class="flex md:block items-center justify-between gap-3 md:text-right"><strong class="text-xl font-black text-red-600">${money(p.price)}</strong><div class="flex gap-2 md:mt-3"><button onclick="edit(${p.id})" class="w-10 h-10 rounded-xl bg-gray-100"><i class="fa-solid fa-pen"></i></button><button onclick="del(${p.id})" class="w-10 h-10 rounded-xl bg-red-50 text-red-600"><i class="fa-solid fa-trash-can"></i></button></div></div></article>`).join('')}
+function setPreview(url){if(url){$('preview').src=url;$('preview').classList.remove('hidden');$('noPreview').classList.add('hidden')}else{$('preview').classList.add('hidden');$('noPreview').classList.remove('hidden')}}
+function openForm(p=null){$('productForm').reset();$('pid').value=p?.id||'';$('formTitle').textContent=p?'Edit Product':'Add Product';$('pname').value=p?.name||'';$('purdu').value=p?.name_urdu||'';$('pprice').value=p?.price??'';$('psort').value=p?.sort_order??0;$('pcat').value=p?.category||'';$('pbrand').value=p?.brand||'';$('pdesc').value=p?.description||'';$('pstock').checked=p?!!p.in_stock:true;$('pfeatured').checked=p?!!p.featured:false;$('pactive').checked=p?!!p.is_active:true;$('oldImage').value=p?.image_url||'';$('oldOriginal').value=p?.original_image_url||'';$('pimage').value='';setPreview(p?.image_url||'');$('modal').classList.add('open');document.body.style.overflow='hidden'}
+function closeForm(){$('modal').classList.remove('open');document.body.style.overflow=''}
+function edit(id){const p=products.find(x=>x.id===Number(id));if(p)openForm(p)}
+function previewImage(){const f=$('pimage').files[0];if(!f)return setPreview($('oldImage').value);const r=new FileReader();r.onload=e=>setPreview(e.target.result);r.readAsDataURL(f)}
+function slug(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||'product'}
+async function upload(file,name){const ext=(file.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'');const path=`original/${Date.now()}-${slug(name)}.${ext}`;const {error}=await sb.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||undefined});if(error)throw error;return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl}
+$('productForm').onsubmit=async e=>{e.preventDefault();$('saveBtn').disabled=true;try{const id=$('pid').value?Number($('pid').value):null,file=$('pimage').files[0];let image=$('oldImage').value||null,original=$('oldOriginal').value||null;if(file){image=await upload(file,$('pname').value.trim());original=image}const payload={name:$('pname').value.trim(),name_urdu:$('purdu').value.trim()||null,price:Number($('pprice').value),category:$('pcat').value,brand:$('pbrand').value,description:$('pdesc').value.trim()||null,image_url:image,original_image_url:original,in_stock:$('pstock').checked,featured:$('pfeatured').checked,is_active:$('pactive').checked,sort_order:Number($('psort').value||0)};const {error}=id?await sb.from('products').update(payload).eq('id',id):await sb.from('products').insert(payload);if(error)throw error;closeForm();toast(id?'Product updated':'Product added');await load()}catch(err){toast('Save failed: '+err.message)}finally{$('saveBtn').disabled=false}};
+async function del(id){const p=products.find(x=>x.id===Number(id));if(!p||!confirm(`Delete "${p.name}"?`))return;const {error}=await sb.from('products').delete().eq('id',id);if(error)return toast('Delete failed: '+error.message);toast('Product deleted');await load()}
+init();
+</script>
+</body></html>
