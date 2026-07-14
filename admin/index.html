@@ -18,17 +18,12 @@ body{font-family:Roboto,sans-serif;background:#f5f6f8;color:#111827}.urdu{font-f
   <div class="w-16 h-16 rounded-2xl bg-red-600 text-white flex items-center justify-center text-2xl"><i class="fa-solid fa-motorcycle"></i></div>
   <p class="mt-6 text-[10px] font-black uppercase tracking-[.25em] text-red-600">Private management</p>
   <h1 class="text-3xl font-black italic uppercase">The Bike Mart Admin</h1>
-  <p class="text-sm text-gray-500 mt-2">Temporary test mode: enter your admin email to open the dashboard. Editing remains protected by Supabase.</p>
+  <p class="text-sm text-gray-500 mt-2">Sign in with the admin email and password you created in Supabase.</p>
   <form id="loginForm" class="mt-7 space-y-4">
-   <div>
-    <label for="email" class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-2">Admin Email</label>
-    <input id="email" type="email" required autocomplete="email" placeholder="adnansteel@gmail.com" class="w-full rounded-2xl border-2 border-gray-200 px-4 py-3.5 outline-none focus:border-red-600">
-   </div>
-   <button id="loginBtn" class="w-full rounded-2xl bg-gray-950 hover:bg-red-600 text-white py-4 font-black uppercase tracking-widest text-xs">
-    <i class="fa-solid fa-right-to-bracket mr-2"></i>Open Test Dashboard
-   </button>
+   <input id="email" type="email" required autocomplete="email" value="adnansteel@gmail.com" placeholder="Admin email" class="w-full rounded-2xl border-2 border-gray-200 px-4 py-3.5 outline-none focus:border-red-600">
+   <input id="password" type="password" required autocomplete="current-password" placeholder="Password" class="w-full rounded-2xl border-2 border-gray-200 px-4 py-3.5 outline-none focus:border-red-600">
+   <button id="loginBtn" class="w-full rounded-2xl bg-gray-950 hover:bg-red-600 text-white py-4 font-black uppercase tracking-widest text-xs"><i class="fa-solid fa-right-to-bracket mr-2"></i>Sign In</button>
   </form>
-  
   <p id="loginError" class="hidden mt-4 rounded-xl bg-red-50 border border-red-100 text-red-700 px-4 py-3 text-sm font-bold"></p>
  </div>
 </section>
@@ -86,37 +81,15 @@ body{font-family:Roboto,sans-serif;background:#f5f6f8;color:#111827}.urdu{font-f
 </div>
 <div id="toast" class="toast fixed z-[100] left-1/2 bottom-6 rounded-full bg-gray-950 text-white px-5 py-3 shadow-2xl text-xs font-bold"><span id="toastText">Saved</span></div>
 <script>
-const SUPABASE_URL='https://lijbrfnczlcttpnmlrzb.supabase.co',SUPABASE_KEY='sb_publishable_snbXhGoPHxJ1BD2-t0bSaA_94Krul0p',ADMIN_USER_ID='aeba949c-1880-4288-94a5-78b8fa1c0ea7',BUCKET='product-images',ADMIN_URL='https://adnansteel-oss.github.io/thebikemart/admin/';
+const SUPABASE_URL='https://lijbrfnczlcttpnmlrzb.supabase.co',SUPABASE_KEY='sb_publishable_snbXhGoPHxJ1BD2-t0bSaA_94Krul0p',ADMIN_USER_ID='52628721-f822-4e72-891a-1c3bd6cec0d9',BUCKET='product-images';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);let products=[];
 const $=id=>document.getElementById(id), money=v=>`Rs. ${Number(v||0).toLocaleString('en-PK')}`;
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 function toast(m){$('toastText').textContent=m;$('toast').classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('show'),2800)}
 async function authUser(user){if(!user||user.id!==ADMIN_USER_ID){await sb.auth.signOut();$('loginError').textContent='This account is not authorized for The Bike Mart admin.';$('loginError').classList.remove('hidden');return}$('loginView').classList.add('hidden');$('adminView').classList.remove('hidden');await load()}
-$('loginForm').onsubmit=async e=>{
- e.preventDefault();
- $('loginError').classList.add('hidden');
- const email=$('email').value.trim().toLowerCase();
- if(email!=='adnansteel@gmail.com'){
-   $('loginError').textContent='This email is not authorized for the test dashboard.';
-   $('loginError').classList.remove('hidden');
-   return;
- }
- currentUser={id:'temporary-test-user',email};
- $('loginView').classList.add('hidden');
- $('adminView').classList.remove('hidden');
- showToast('Temporary test mode opened');
- await loadProducts();
-};
+$('loginForm').onsubmit=async e=>{e.preventDefault();$('loginError').classList.add('hidden');$('loginBtn').disabled=true;const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});$('loginBtn').disabled=false;if(error){$('loginError').textContent=error.message;$('loginError').classList.remove('hidden');return}await authUser(data.user)};
 async function logout(){await sb.auth.signOut();location.reload()}
-async function init(){
- const {data:{session},error}=await sb.auth.getSession();
- if(error){
-   $('loginError').textContent=error.message;
-   $('loginError').classList.remove('hidden');
-   return;
- }
- if(session)await authUser(session.user);
-}
+async function init(){const {data:{session}}=await sb.auth.getSession();if(session)await authUser(session.user)}
 async function load(){const {data,error}=await sb.from('products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});$('loading').classList.add('hidden');if(error){toast('Load failed: '+error.message);return}products=data||[];$('sTotal').textContent=products.length;$('sStock').textContent=products.filter(x=>x.in_stock).length;$('sFeatured').textContent=products.filter(x=>x.featured).length;$('sHidden').textContent=products.filter(x=>!x.is_active).length;render()}
 function render(){const q=$('search').value.toLowerCase().trim(),arr=products.filter(p=>[p.name,p.name_urdu,p.brand,p.category].some(v=>String(v||'').toLowerCase().includes(q)));$('list').classList.toggle('hidden',!arr.length);$('empty').classList.toggle('hidden',!!arr.length);$('list').innerHTML=arr.map(p=>`<article class="p-4 sm:p-5 flex flex-col md:flex-row md:items-center gap-4 hover:bg-gray-50"><div class="w-full md:w-24 h-36 md:h-24 rounded-2xl bg-gray-100 flex items-center justify-center overflow-hidden">${p.image_url?`<img src="${esc(p.image_url)}" class="max-w-full max-h-full object-contain">`:'<i class="fa-regular fa-image text-3xl text-gray-300"></i>'}</div><div class="flex-1 min-w-0"><div class="flex gap-2 flex-wrap"><span class="rounded-full px-2.5 py-1 text-[9px] font-black ${p.in_stock?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${p.in_stock?'IN STOCK':'OUT OF STOCK'}</span>${p.featured?'<span class="rounded-full bg-amber-100 text-amber-700 px-2.5 py-1 text-[9px] font-black">FEATURED</span>':''}${!p.is_active?'<span class="rounded-full bg-gray-200 text-gray-600 px-2.5 py-1 text-[9px] font-black">HIDDEN</span>':''}</div><h3 class="font-black uppercase text-lg mt-2">${esc(p.name)}</h3><p class="urdu text-gray-500 text-sm">${esc(p.name_urdu)}</p><p class="text-xs text-gray-400 mt-1">${esc(p.brand)} • ${esc(p.category)}</p></div><div class="flex md:block items-center justify-between gap-3 md:text-right"><strong class="text-xl font-black text-red-600">${money(p.price)}</strong><div class="flex gap-2 md:mt-3"><button onclick="edit(${p.id})" class="w-10 h-10 rounded-xl bg-gray-100"><i class="fa-solid fa-pen"></i></button><button onclick="del(${p.id})" class="w-10 h-10 rounded-xl bg-red-50 text-red-600"><i class="fa-solid fa-trash-can"></i></button></div></div></article>`).join('')}
 function setPreview(url){if(url){$('preview').src=url;$('preview').classList.remove('hidden');$('noPreview').classList.add('hidden')}else{$('preview').classList.add('hidden');$('noPreview').classList.remove('hidden')}}
@@ -126,15 +99,8 @@ function edit(id){const p=products.find(x=>x.id===Number(id));if(p)openForm(p)}
 function previewImage(){const f=$('pimage').files[0];if(!f)return setPreview($('oldImage').value);const r=new FileReader();r.onload=e=>setPreview(e.target.result);r.readAsDataURL(f)}
 function slug(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||'product'}
 async function upload(file,name){const ext=(file.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'');const path=`original/${Date.now()}-${slug(name)}.${ext}`;const {error}=await sb.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||undefined});if(error)throw error;return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl}
-$('productForm').onsubmit=async e=>{e.preventDefault(); if(currentUser?.id==='temporary-test-user'){showToast('Editing is disabled in temporary test mode',true);return;}$('saveBtn').disabled=true;try{const id=$('pid').value?Number($('pid').value):null,file=$('pimage').files[0];let image=$('oldImage').value||null,original=$('oldOriginal').value||null;if(file){image=await upload(file,$('pname').value.trim());original=image}const payload={name:$('pname').value.trim(),name_urdu:$('purdu').value.trim()||null,price:Number($('pprice').value),category:$('pcat').value,brand:$('pbrand').value,description:$('pdesc').value.trim()||null,image_url:image,original_image_url:original,in_stock:$('pstock').checked,featured:$('pfeatured').checked,is_active:$('pactive').checked,sort_order:Number($('psort').value||0)};const {error}=id?await sb.from('products').update(payload).eq('id',id):await sb.from('products').insert(payload);if(error)throw error;closeForm();toast(id?'Product updated':'Product added');await load()}catch(err){toast('Save failed: '+err.message)}finally{$('saveBtn').disabled=false}};
+$('productForm').onsubmit=async e=>{e.preventDefault();$('saveBtn').disabled=true;try{const id=$('pid').value?Number($('pid').value):null,file=$('pimage').files[0];let image=$('oldImage').value||null,original=$('oldOriginal').value||null;if(file){image=await upload(file,$('pname').value.trim());original=image}const payload={name:$('pname').value.trim(),name_urdu:$('purdu').value.trim()||null,price:Number($('pprice').value),category:$('pcat').value,brand:$('pbrand').value,description:$('pdesc').value.trim()||null,image_url:image,original_image_url:original,in_stock:$('pstock').checked,featured:$('pfeatured').checked,is_active:$('pactive').checked,sort_order:Number($('psort').value||0)};const {error}=id?await sb.from('products').update(payload).eq('id',id):await sb.from('products').insert(payload);if(error)throw error;closeForm();toast(id?'Product updated':'Product added');await load()}catch(err){toast('Save failed: '+err.message)}finally{$('saveBtn').disabled=false}};
 async function del(id){const p=products.find(x=>x.id===Number(id));if(!p||!confirm(`Delete "${p.name}"?`))return;const {error}=await sb.from('products').delete().eq('id',id);if(error)return toast('Delete failed: '+error.message);toast('Product deleted');await load()}
-sb.auth.onAuthStateChange(async(event,session)=>{
- if(event==='SIGNED_IN'&&session?.user)await authUser(session.user);
- if(event==='SIGNED_OUT'){
-   $('adminView').classList.add('hidden');
-   $('loginView').classList.remove('hidden');
- }
-});
 init();
 </script>
 </body></html>
