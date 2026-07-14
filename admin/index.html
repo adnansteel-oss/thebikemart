@@ -18,20 +18,17 @@ body{font-family:Roboto,sans-serif;background:#f5f6f8;color:#111827}.urdu{font-f
   <div class="w-16 h-16 rounded-2xl bg-red-600 text-white flex items-center justify-center text-2xl"><i class="fa-solid fa-motorcycle"></i></div>
   <p class="mt-6 text-[10px] font-black uppercase tracking-[.25em] text-red-600">Private management</p>
   <h1 class="text-3xl font-black italic uppercase">The Bike Mart Admin</h1>
-  <p class="text-sm text-gray-500 mt-2">Enter your admin email and we’ll send you a secure login link. No password is required.</p>
+  <p class="text-sm text-gray-500 mt-2">Temporary test mode: enter your admin email to open the dashboard. Editing remains protected by Supabase.</p>
   <form id="loginForm" class="mt-7 space-y-4">
    <div>
     <label for="email" class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-2">Admin Email</label>
     <input id="email" type="email" required autocomplete="email" placeholder="adnansteel@gmail.com" class="w-full rounded-2xl border-2 border-gray-200 px-4 py-3.5 outline-none focus:border-red-600">
    </div>
    <button id="loginBtn" class="w-full rounded-2xl bg-gray-950 hover:bg-red-600 text-white py-4 font-black uppercase tracking-widest text-xs">
-    <i class="fa-solid fa-envelope mr-2"></i>Send Secure Login Link
+    <i class="fa-solid fa-right-to-bracket mr-2"></i>Open Test Dashboard
    </button>
   </form>
-  <div id="loginSuccess" class="hidden mt-4 rounded-xl bg-green-50 border border-green-100 text-green-700 px-4 py-3 text-sm font-bold">
-   <i class="fa-solid fa-circle-check mr-2"></i>
-   Login link sent. Open your email and click the secure link to enter the dashboard.
-  </div>
+  
   <p id="loginError" class="hidden mt-4 rounded-xl bg-red-50 border border-red-100 text-red-700 px-4 py-3 text-sm font-bold"></p>
  </div>
 </section>
@@ -98,25 +95,17 @@ async function authUser(user){if(!user||user.id!==ADMIN_USER_ID){await sb.auth.s
 $('loginForm').onsubmit=async e=>{
  e.preventDefault();
  $('loginError').classList.add('hidden');
- $('loginSuccess').classList.add('hidden');
  const email=$('email').value.trim().toLowerCase();
- $('loginBtn').disabled=true;
- $('loginBtn').innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Sending Login Link...';
- const {error}=await sb.auth.signInWithOtp({
-   email,
-   options:{
-     emailRedirectTo:ADMIN_URL,
-     shouldCreateUser:false
-   }
- });
- $('loginBtn').disabled=false;
- $('loginBtn').innerHTML='<i class="fa-solid fa-envelope mr-2"></i>Send Secure Login Link';
- if(error){
-   $('loginError').textContent=error.message;
+ if(email!=='adnansteel@gmail.com'){
+   $('loginError').textContent='This email is not authorized for the test dashboard.';
    $('loginError').classList.remove('hidden');
    return;
  }
- $('loginSuccess').classList.remove('hidden');
+ currentUser={id:'temporary-test-user',email};
+ $('loginView').classList.add('hidden');
+ $('adminView').classList.remove('hidden');
+ showToast('Temporary test mode opened');
+ await loadProducts();
 };
 async function logout(){await sb.auth.signOut();location.reload()}
 async function init(){
@@ -137,7 +126,7 @@ function edit(id){const p=products.find(x=>x.id===Number(id));if(p)openForm(p)}
 function previewImage(){const f=$('pimage').files[0];if(!f)return setPreview($('oldImage').value);const r=new FileReader();r.onload=e=>setPreview(e.target.result);r.readAsDataURL(f)}
 function slug(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||'product'}
 async function upload(file,name){const ext=(file.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'');const path=`original/${Date.now()}-${slug(name)}.${ext}`;const {error}=await sb.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||undefined});if(error)throw error;return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl}
-$('productForm').onsubmit=async e=>{e.preventDefault();$('saveBtn').disabled=true;try{const id=$('pid').value?Number($('pid').value):null,file=$('pimage').files[0];let image=$('oldImage').value||null,original=$('oldOriginal').value||null;if(file){image=await upload(file,$('pname').value.trim());original=image}const payload={name:$('pname').value.trim(),name_urdu:$('purdu').value.trim()||null,price:Number($('pprice').value),category:$('pcat').value,brand:$('pbrand').value,description:$('pdesc').value.trim()||null,image_url:image,original_image_url:original,in_stock:$('pstock').checked,featured:$('pfeatured').checked,is_active:$('pactive').checked,sort_order:Number($('psort').value||0)};const {error}=id?await sb.from('products').update(payload).eq('id',id):await sb.from('products').insert(payload);if(error)throw error;closeForm();toast(id?'Product updated':'Product added');await load()}catch(err){toast('Save failed: '+err.message)}finally{$('saveBtn').disabled=false}};
+$('productForm').onsubmit=async e=>{e.preventDefault(); if(currentUser?.id==='temporary-test-user'){showToast('Editing is disabled in temporary test mode',true);return;}$('saveBtn').disabled=true;try{const id=$('pid').value?Number($('pid').value):null,file=$('pimage').files[0];let image=$('oldImage').value||null,original=$('oldOriginal').value||null;if(file){image=await upload(file,$('pname').value.trim());original=image}const payload={name:$('pname').value.trim(),name_urdu:$('purdu').value.trim()||null,price:Number($('pprice').value),category:$('pcat').value,brand:$('pbrand').value,description:$('pdesc').value.trim()||null,image_url:image,original_image_url:original,in_stock:$('pstock').checked,featured:$('pfeatured').checked,is_active:$('pactive').checked,sort_order:Number($('psort').value||0)};const {error}=id?await sb.from('products').update(payload).eq('id',id):await sb.from('products').insert(payload);if(error)throw error;closeForm();toast(id?'Product updated':'Product added');await load()}catch(err){toast('Save failed: '+err.message)}finally{$('saveBtn').disabled=false}};
 async function del(id){const p=products.find(x=>x.id===Number(id));if(!p||!confirm(`Delete "${p.name}"?`))return;const {error}=await sb.from('products').delete().eq('id',id);if(error)return toast('Delete failed: '+error.message);toast('Product deleted');await load()}
 sb.auth.onAuthStateChange(async(event,session)=>{
  if(event==='SIGNED_IN'&&session?.user)await authUser(session.user);
