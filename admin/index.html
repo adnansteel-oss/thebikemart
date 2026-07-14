@@ -68,9 +68,22 @@ body{font-family:Roboto,sans-serif;background:#f5f6f8;color:#111827}.urdu { font
     <select id="pbrand" required class="rounded-xl border bg-white px-4 py-3"><option value="">Choose brand *</option><option>KAI CHI</option><option>AUTO MAX</option><option>CRLF</option><option>TTR</option><option>SAGA</option><option>CMX</option><option>STF</option><option>Miscellaneous</option></select>
    </div>
    <textarea id="pdesc" rows="3" placeholder="Description" class="w-full rounded-xl border px-4 py-3 outline-none focus:border-red-600"></textarea>
-   <div class="rounded-2xl border bg-gray-50 p-4 flex flex-col sm:flex-row gap-4">
-    <div class="w-full sm:w-40 h-40 rounded-2xl bg-white border flex items-center justify-center overflow-hidden"><img id="preview" class="hidden max-w-full max-h-full object-contain"><div id="noPreview" class="text-center text-gray-400"><i class="fa-regular fa-image text-3xl"></i><p class="text-[10px] mt-2 font-bold">No image</p></div></div>
-    <div class="flex-1"><label class="text-[10px] font-black uppercase tracking-wider text-gray-500">Product Photo</label><input id="pimage" type="file" accept="image/*" capture="environment" onchange="previewImage()" class="mt-3 block w-full text-sm text-gray-500 file:rounded-xl file:border-0 file:bg-gray-950 file:text-white file:px-4 file:py-2.5"><p class="text-xs text-gray-500 mt-3">You can take a new photo from your phone. Automatic professional cleanup will be added in the PhotoRoom stage.</p></div>
+   <div class="rounded-2xl border bg-gray-50 p-4">
+    <div class="flex flex-col sm:flex-row gap-4">
+     <div class="w-full sm:w-48 h-48 rounded-2xl bg-white border flex items-center justify-center overflow-hidden">
+      <img id="preview" class="hidden max-w-full max-h-full object-contain" alt="Product image preview">
+      <div id="noPreview" class="text-center text-gray-400"><i class="fa-regular fa-image text-3xl"></i><p class="text-[10px] mt-2 font-bold">No image</p></div>
+     </div>
+     <div class="flex-1">
+      <label class="text-[10px] font-black uppercase tracking-wider text-gray-500">Product Photo</label>
+      <input id="pimage" type="file" accept="image/*" capture="environment" onchange="previewImage()" class="mt-3 block w-full text-sm text-gray-500 file:rounded-xl file:border-0 file:bg-gray-950 file:text-white file:px-4 file:py-2.5">
+      <p class="text-xs text-gray-500 mt-3 leading-relaxed">Take a photo or choose one from your phone. Then press <b>Improve Image</b> to remove the background, improve lighting, add a soft shadow, and prepare a clean ecommerce image.</p>
+      <button id="improveBtn" type="button" onclick="improveImage()" class="mt-4 w-full sm:w-auto rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 font-black text-xs uppercase tracking-wider shadow-lg">
+       <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Improve Image
+      </button>
+      <p id="imageStatus" class="mt-3 text-xs font-bold text-gray-500">Choose a photo, then improve it before saving.</p>
+     </div>
+    </div>
    </div>
    <div class="grid sm:grid-cols-3 gap-3">
     <label class="rounded-2xl border p-4 flex justify-between items-center"><div><b class="text-sm">In Stock</b><p class="text-[10px] text-gray-500">Available to order</p></div><span class="switch relative"><input id="pstock" type="checkbox" checked class="sr-only"><span class="relative block w-11 h-6 rounded-full bg-gray-300"></span></span></label>
@@ -95,13 +108,65 @@ async function init(){const {data:{session}}=await sb.auth.getSession();if(sessi
 async function load(){const {data,error}=await sb.from('products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});$('loading').classList.add('hidden');if(error){toast('Load failed: '+error.message);return}products=data||[];$('sTotal').textContent=products.length;$('sStock').textContent=products.filter(x=>x.in_stock).length;$('sFeatured').textContent=products.filter(x=>x.featured).length;$('sHidden').textContent=products.filter(x=>!x.is_active).length;render()}
 function render(){const q=$('search').value.toLowerCase().trim(),arr=products.filter(p=>[p.name,p.name_urdu,p.brand,p.category].some(v=>String(v||'').toLowerCase().includes(q)));$('list').classList.toggle('hidden',!arr.length);$('empty').classList.toggle('hidden',!!arr.length);$('list').innerHTML=arr.map(p=>`<article class="p-4 sm:p-5 flex flex-col md:flex-row md:items-center gap-4 hover:bg-gray-50"><div class="w-full md:w-24 h-36 md:h-24 rounded-2xl bg-gray-100 flex items-center justify-center overflow-hidden">${p.image_url?`<img src="${esc(p.image_url)}" class="max-w-full max-h-full object-contain">`:'<i class="fa-regular fa-image text-3xl text-gray-300"></i>'}</div><div class="flex-1 min-w-0"><div class="flex gap-2 flex-wrap"><span class="rounded-full px-2.5 py-1 text-[9px] font-black ${p.in_stock?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${p.in_stock?'IN STOCK':'OUT OF STOCK'}</span>${p.featured?'<span class="rounded-full bg-amber-100 text-amber-700 px-2.5 py-1 text-[9px] font-black">FEATURED</span>':''}${!p.is_active?'<span class="rounded-full bg-gray-200 text-gray-600 px-2.5 py-1 text-[9px] font-black">HIDDEN</span>':''}</div><h3 class="font-black uppercase text-lg mt-2">${esc(p.name)}</h3><p lang="ur" dir="rtl" class="urdu text-gray-500 text-sm">${esc(p.name_urdu)}</p><p class="text-xs text-gray-400 mt-1">${esc(p.brand)} • ${esc(p.category)}</p></div><div class="flex md:block items-center justify-between gap-3 md:text-right"><strong class="text-xl font-black text-red-600">${money(p.price)}</strong><div class="flex gap-2 md:mt-3"><button onclick="edit(${p.id})" class="w-10 h-10 rounded-xl bg-gray-100"><i class="fa-solid fa-pen"></i></button><button onclick="del(${p.id})" class="w-10 h-10 rounded-xl bg-red-50 text-red-600"><i class="fa-solid fa-trash-can"></i></button></div></div></article>`).join('')}
 function setPreview(url){if(url){$('preview').src=url;$('preview').classList.remove('hidden');$('noPreview').classList.add('hidden')}else{$('preview').classList.add('hidden');$('noPreview').classList.remove('hidden')}}
-function openForm(p=null){$('productForm').reset();$('pid').value=p?.id||'';$('formTitle').textContent=p?'Edit Product':'Add Product';$('pname').value=p?.name||'';$('purdu').value=p?.name_urdu||'';$('pprice').value=p?.price??'';$('psort').value=p?.sort_order??0;$('pcat').value=p?.category||'';$('pbrand').value=p?.brand||'';$('pdesc').value=p?.description||'';$('pstock').checked=p?!!p.in_stock:true;$('pfeatured').checked=p?!!p.featured:false;$('pactive').checked=p?!!p.is_active:true;$('oldImage').value=p?.image_url||'';$('oldOriginal').value=p?.original_image_url||'';$('pimage').value='';setPreview(p?.image_url||'');$('modal').classList.add('open');document.body.style.overflow='hidden'}
+function openForm(p=null){$('productForm').reset();$('pid').value=p?.id||'';$('formTitle').textContent=p?'Edit Product':'Add Product';$('pname').value=p?.name||'';$('purdu').value=p?.name_urdu||'';$('pprice').value=p?.price??'';$('psort').value=p?.sort_order??0;$('pcat').value=p?.category||'';$('pbrand').value=p?.brand||'';$('pdesc').value=p?.description||'';$('pstock').checked=p?!!p.in_stock:true;$('pfeatured').checked=p?!!p.featured:false;$('pactive').checked=p?!!p.is_active:true;$('oldImage').value=p?.image_url||'';$('oldOriginal').value=p?.original_image_url||'';$('pimage').value='';setPreview(p?.image_url||'');$('imageStatus').textContent=p?.image_url?'Current website image loaded. Choose a new photo to replace it, or improve the original image.':'Choose a photo, then improve it before saving.';$('modal').classList.add('open');document.body.style.overflow='hidden'}
 function closeForm(){$('modal').classList.remove('open');document.body.style.overflow=''}
 function edit(id){const p=products.find(x=>x.id===Number(id));if(p)openForm(p)}
-function previewImage(){const f=$('pimage').files[0];if(!f)return setPreview($('oldImage').value);const r=new FileReader();r.onload=e=>setPreview(e.target.result);r.readAsDataURL(f)}
+function previewImage(){const f=$('pimage').files[0];if(!f){setPreview($('oldImage').value);$('imageStatus').textContent=$('oldImage').value?'Current website image loaded.':'Choose a photo, then improve it before saving.';return}const r=new FileReader();r.onload=e=>setPreview(e.target.result);r.readAsDataURL(f);$('imageStatus').textContent='New mobile photo selected. Press Improve Image for a professional version.'}
 function slug(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||'product'}
 async function upload(file,name){const ext=(file.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'');const path=`original/${Date.now()}-${slug(name)}.${ext}`;const {error}=await sb.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||undefined});if(error)throw error;return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl}
-$('productForm').onsubmit=async e=>{e.preventDefault();$('saveBtn').disabled=true;try{const id=$('pid').value?Number($('pid').value):null,file=$('pimage').files[0];let image=$('oldImage').value||null,original=$('oldOriginal').value||null;if(file){image=await upload(file,$('pname').value.trim());original=image}const payload={name:$('pname').value.trim(),name_urdu:$('purdu').value.trim()||null,price:Number($('pprice').value),category:$('pcat').value,brand:$('pbrand').value,description:$('pdesc').value.trim()||null,image_url:image,original_image_url:original,in_stock:$('pstock').checked,featured:$('pfeatured').checked,is_active:$('pactive').checked,sort_order:Number($('psort').value||0)};const {error}=id?await sb.from('products').update(payload).eq('id',id):await sb.from('products').insert(payload);if(error)throw error;closeForm();toast(id?'Product updated':'Product added');await load()}catch(err){toast('Save failed: '+err.message)}finally{$('saveBtn').disabled=false}};
+
+function absoluteImageUrl(url){
+ if(!url)return '';
+ if(/^https?:\/\//i.test(url))return url;
+ const clean=String(url).replace(/^\.\//,'').replace(/^\//,'');
+ return new URL('../'+clean,location.href).href;
+}
+
+async function improveImage(){
+ const name=$('pname').value.trim();
+ if(!name){toast('Enter the product name first');$('pname').focus();return}
+
+ const btn=$('improveBtn');
+ const file=$('pimage').files[0];
+ let source=$('oldOriginal').value||$('oldImage').value||'';
+
+ btn.disabled=true;
+ btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Improving Image...';
+ $('imageStatus').textContent='Preparing the original photo...';
+
+ try{
+   if(file){
+     source=await upload(file,name);
+     $('oldOriginal').value=source;
+     $('pimage').value='';
+   }
+
+   source=absoluteImageUrl(source);
+   if(!source)throw new Error('Choose or upload a product photo first.');
+
+   $('imageStatus').textContent='PhotoRoom is creating the professional product image...';
+
+   const {data,error}=await sb.functions.invoke('process-product-image',{
+     body:{imageUrl:source,productName:name}
+   });
+
+   if(error)throw error;
+   if(!data?.processedImageUrl)throw new Error(data?.error||'Processed image URL was not returned.');
+
+   $('oldImage').value=data.processedImageUrl;
+   setPreview(data.processedImageUrl);
+   $('imageStatus').textContent='Professional image ready. Review the preview, then press Save Product.';
+   toast('Professional image created');
+ }catch(err){
+   console.error(err);
+   $('imageStatus').textContent='Image improvement failed. Check the Edge Function logs and try again.';
+   toast('Improve failed: '+(err?.message||'Unknown error'));
+ }finally{
+   btn.disabled=false;
+   btn.innerHTML='<i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Improve Image';
+ }
+}
+$('productForm').onsubmit=async e=>{e.preventDefault();$('saveBtn').disabled=true;try{const id=$('pid').value?Number($('pid').value):null,file=$('pimage').files[0];let image=$('oldImage').value||null,original=$('oldOriginal').value||null;if(file){const rawUrl=await upload(file,$('pname').value.trim());original=rawUrl;image=rawUrl}const payload={name:$('pname').value.trim(),name_urdu:$('purdu').value.trim()||null,price:Number($('pprice').value),category:$('pcat').value,brand:$('pbrand').value,description:$('pdesc').value.trim()||null,image_url:image,original_image_url:original,in_stock:$('pstock').checked,featured:$('pfeatured').checked,is_active:$('pactive').checked,sort_order:Number($('psort').value||0)};const {error}=id?await sb.from('products').update(payload).eq('id',id):await sb.from('products').insert(payload);if(error)throw error;closeForm();toast(id?'Product updated':'Product added');await load()}catch(err){toast('Save failed: '+err.message)}finally{$('saveBtn').disabled=false}};
 async function del(id){const p=products.find(x=>x.id===Number(id));if(!p||!confirm(`Delete "${p.name}"?`))return;const {error}=await sb.from('products').delete().eq('id',id);if(error)return toast('Delete failed: '+error.message);toast('Product deleted');await load()}
 init();
 </script>
