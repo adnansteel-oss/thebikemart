@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,6 +15,7 @@
     <title>The Bike Mart | کراچی کی اسپیئر پارٹس شاپ</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Urdu:wght@400;600;700&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -724,6 +726,12 @@
     <script>
         const WHATSAPP_NUMBER = "923332442529";
 
+        // Public Supabase connection. The publishable key is safe for browser use
+        // because editing is still protected by Row Level Security (RLS).
+        const SUPABASE_URL = "https://lijbrfnczlcttpnmlrzb.supabase.co";
+        const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_snbXhGoPHxJ1BD2-t0bSaA_94Krul0p";
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
         // Main store brands shown in the Brands menus.
         const storeBrands = ["KAI CHI", "AUTO MAX", "CRLF", "TTR", "SAGA", "CMX"];
 
@@ -739,7 +747,7 @@
         ];
 
         // Add or edit products here. Optional fields: description, model, featured.
-        const products = [
+        const fallbackProducts = [
             {
                 id: 1,
                 name: "Kaan Kala",
@@ -810,7 +818,8 @@
             { name: "Nut & Bolts", icon: "fa-screwdriver-wrench" }
         ];
 
-        let cart = loadCart();
+        let products = [];
+        let cart = [];
         let currentSlide = 0;
         let sliderTimer;
         let filterState = { type: "all", value: "", search: "" };
@@ -868,6 +877,77 @@
 
         function saveCart() {
             localStorage.setItem("bikeMartCart", JSON.stringify(cart));
+        }
+
+        function showProductLoadingState() {
+            const grid = document.getElementById("productGrid");
+            const results = document.getElementById("resultsText");
+            if (results) results.textContent = "Loading products from database...";
+            if (!grid) return;
+
+            grid.classList.remove("hidden");
+            grid.innerHTML = Array.from({ length: 5 }, () => `
+                <div class="rounded-2xl sm:rounded-[1.6rem] border border-gray-200 bg-white p-3 sm:p-4 shadow-sm">
+                    <div class="skeleton rounded-xl sm:rounded-2xl h-36 sm:h-48 mt-7"></div>
+                    <div class="skeleton rounded h-2.5 w-1/3 mt-4"></div>
+                    <div class="skeleton rounded h-4 w-4/5 mt-3"></div>
+                    <div class="skeleton rounded h-4 w-2/3 mt-2"></div>
+                    <div class="skeleton rounded h-6 w-1/2 mt-5"></div>
+                </div>
+            `).join("");
+        }
+
+        function mapDatabaseProduct(row) {
+            return {
+                id: Number(row.id),
+                name: row.name || "Unnamed Product",
+                nameUrdu: row.name_urdu || "",
+                price: Number(row.price) || 0,
+                cat: row.category || "Miscellaneous",
+                brand: row.brand || "Miscellaneous",
+                inStock: Boolean(row.in_stock),
+                featured: Boolean(row.featured),
+                description: row.description || "Contact us for product compatibility and availability details.",
+                img: row.image_url || makePlaceholder(row.name || "Bike Part")
+            };
+        }
+
+        async function loadProductsFromSupabase() {
+            const { data, error } = await supabaseClient
+                .from("products")
+                .select("id,name,name_urdu,price,category,brand,description,image_url,original_image_url,in_stock,featured,is_active,sort_order,created_at,updated_at")
+                .eq("is_active", true)
+                .order("sort_order", { ascending: true })
+                .order("id", { ascending: true });
+
+            if (error) throw error;
+            return (data || []).map(mapDatabaseProduct);
+        }
+
+        async function initializeStore() {
+            showProductLoadingState();
+
+            try {
+                const databaseProducts = await loadProductsFromSupabase();
+                products = databaseProducts.length ? databaseProducts : [...fallbackProducts];
+
+                if (!databaseProducts.length) {
+                    console.warn("Supabase returned no active products. Showing local fallback products.");
+                }
+            } catch (error) {
+                console.error("Could not load products from Supabase:", error);
+                products = [...fallbackProducts];
+                showToast("Database connection unavailable — showing backup products", "fa-triangle-exclamation");
+            }
+
+            // Load the saved cart only after product IDs are available.
+            cart = loadCart();
+
+            renderBrands();
+            renderBrandShowcase();
+            renderCategoryChips();
+            applyFilters();
+            updateCart();
         }
 
         function renderBrands() {
@@ -1345,13 +1425,9 @@
         });
 
         document.getElementById("currentYear").textContent = new Date().getFullYear();
-        renderBrands();
-        renderBrandShowcase();
-        renderCategoryChips();
         buildSliderDots();
         restartSlider();
-        applyFilters();
-        updateCart();
+        initializeStore();
     </script>
 </body>
 </html>
