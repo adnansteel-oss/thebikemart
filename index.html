@@ -18,7 +18,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Urdu:wght@400;600;700&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
@@ -46,7 +46,7 @@
         body.no-scroll { overflow: hidden; }
         button, input, textarea, select { font: inherit; }
         button { -webkit-tap-highlight-color: transparent; }
-        .urdu { font-family: "Noto Sans Urdu", sans-serif; }
+        .urdu { font-family: "Noto Nastaliq Urdu", "Noto Sans Arabic", serif !important; direction: rtl; unicode-bidi: plaintext; line-height: 2.05; }
 
         .glass {
             background: rgba(255,255,255,.88);
@@ -252,14 +252,16 @@
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
         }
-    </style>
+    
+.urdu-input { font-family: "Noto Nastaliq Urdu", "Noto Sans Arabic", serif !important; direction: rtl; text-align: right; line-height: 2; }
+</style>
 </head>
 <body>
 
     <!-- TOP NOTICE -->
     <div class="bg-[#080b12] text-white border-b border-red-700/60">
         <div class="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-center sm:justify-between gap-2 text-[10px] sm:text-xs font-bold">
-            <p class="urdu text-center sm:text-left">
+            <p lang="ur" dir="rtl" class="urdu text-center sm:text-left">
                 <i class="fa-solid fa-truck-fast text-red-500 mr-1"></i>
                 پورے کراچی میں ڈیلیوری — Delivery across Karachi
             </p>
@@ -409,7 +411,7 @@
                     <p class="mt-5 text-sm sm:text-lg text-gray-200 max-w-xl leading-relaxed">
                         Genuine, replacement and fancy motorcycle parts at competitive prices—carefully packed and delivered across Karachi.
                     </p>
-                    <p class="urdu mt-2 text-base sm:text-xl text-gray-100">بہترین موٹر سائیکل پارٹس، مناسب قیمت اور آسان واٹس ایپ آرڈر</p>
+                    <p lang="ur" dir="rtl" class="urdu mt-2 text-base sm:text-xl text-gray-100">بہترین موٹر سائیکل پارٹس، مناسب قیمت اور آسان واٹس ایپ آرڈر</p>
 
                     <div class="mt-7 flex flex-wrap gap-3">
                         <button onclick="scrollToSection('products')" class="rounded-2xl bg-red-600 hover:bg-red-700 px-6 py-4 font-black uppercase text-xs tracking-widest shadow-xl shadow-red-950/30 active:scale-95 transition">
@@ -465,7 +467,7 @@
                 <div>
                     <p class="text-red-600 font-black uppercase tracking-[.25em] text-[10px] mb-2">Find faster</p>
                     <h2 class="text-2xl sm:text-4xl font-black italic uppercase tracking-tight">Shop by Category</h2>
-                    <p class="urdu mt-2 text-gray-500">اپنی ضرورت کے مطابق پارٹس منتخب کریں</p>
+                    <p lang="ur" dir="rtl" class="urdu mt-2 text-gray-500">اپنی ضرورت کے مطابق پارٹس منتخب کریں</p>
                 </div>
                 <button onclick="showAllProducts()" class="text-sm font-black text-red-600 hover:text-red-800">View all products <i class="fa-solid fa-arrow-right ml-1"></i></button>
             </div>
@@ -479,7 +481,7 @@
                 <div>
                     <p class="text-red-600 font-black uppercase tracking-[.25em] text-[10px] mb-2">Trusted names</p>
                     <h2 class="text-2xl sm:text-4xl font-black italic uppercase tracking-tight">Shop by Brands</h2>
-                    <p class="urdu mt-2 text-gray-500">اپنے پسندیدہ برانڈ کے مطابق پارٹس دیکھیں</p>
+                    <p lang="ur" dir="rtl" class="urdu mt-2 text-gray-500">اپنے پسندیدہ برانڈ کے مطابق پارٹس دیکھیں</p>
                 </div>
                 <button onclick="showAllProducts()" class="text-sm font-black text-red-600 hover:text-red-800">View all brands & parts <i class="fa-solid fa-arrow-right ml-1"></i></button>
             </div>
@@ -541,7 +543,7 @@
                 <div class="text-center max-w-2xl mx-auto mb-10">
                     <p class="text-red-500 font-black uppercase tracking-[.25em] text-[10px] mb-2">Why customers choose us</p>
                     <h2 class="text-3xl sm:text-5xl font-black italic uppercase">Built for Bike Owners</h2>
-                    <p class="urdu text-gray-300 mt-3">صحیح پارٹ تلاش کرنے سے لے کر آرڈر تک آسان تجربہ</p>
+                    <p lang="ur" dir="rtl" class="urdu text-gray-300 mt-3">صحیح پارٹ تلاش کرنے سے لے کر آرڈر تک آسان تجربہ</p>
                 </div>
 
                 <div class="grid md:grid-cols-3 gap-5">
@@ -607,7 +609,7 @@
             <div>
                 <h3 class="font-black uppercase text-sm tracking-widest">Order Information</h3>
                 <p class="mt-4 text-gray-400 text-sm leading-relaxed">Delivery charges are usually Rs. 200–500 within Karachi, depending on area and parcel size.</p>
-                <p class="urdu text-gray-400 text-sm mt-3">آرڈر کی تصدیق واٹس ایپ پر کی جائے گی۔</p>
+                <p lang="ur" dir="rtl" class="urdu text-gray-400 text-sm mt-3">آرڈر کی تصدیق واٹس ایپ پر کی جائے گی۔</p>
             </div>
         </div>
         <div class="border-t border-white/10">
@@ -635,7 +637,7 @@
                     </div>
                     <p id="modalBrand" class="text-red-600 font-black text-[10px] uppercase tracking-[.22em]"></p>
                     <h2 id="modalTitleEng" class="text-2xl sm:text-4xl font-black uppercase leading-tight mt-2"></h2>
-                    <h3 id="modalTitleUrdu" class="urdu text-xl sm:text-3xl font-bold text-gray-500 mt-2"></h3>
+                    <h3 lang="ur" dir="rtl" id="modalTitleUrdu" class="urdu text-xl sm:text-3xl font-bold text-gray-500 mt-2"></h3>
                     <p id="modalDescription" class="text-gray-500 text-sm leading-relaxed mt-5"></p>
                     <div class="mt-6 flex items-end justify-between gap-4 border-y border-gray-100 py-5">
                         <div>
@@ -665,7 +667,7 @@
         <div class="px-4 py-3.5 bg-gray-950 text-white flex items-center justify-between flex-shrink-0">
             <div>
                 <p class="font-black italic uppercase text-base">Shopping Cart</p>
-                <p class="urdu text-[10px] text-gray-400 mt-0.5">آپ کی خریداری کی ٹوکری</p>
+                <p lang="ur" dir="rtl" class="urdu text-[10px] text-gray-400 mt-0.5">آپ کی خریداری کی ٹوکری</p>
             </div>
             <button onclick="toggleCart(false)" class="w-9 h-9 rounded-full bg-white/10 hover:bg-red-600" aria-label="Close shopping cart"><i class="fa-solid fa-xmark"></i></button>
         </div>
@@ -704,7 +706,7 @@
                 <span class="font-bold text-sm text-gray-500">Subtotal</span>
                 <strong id="cartTotal" class="text-xl font-black text-red-600">Rs. 0</strong>
             </div>
-            <p class="urdu text-[9px] text-gray-500 text-center mt-1.5">ڈیلیوری چارجز آرڈر کی تصدیق کے وقت بتائے جائیں گے۔</p>
+            <p lang="ur" dir="rtl" class="urdu text-[9px] text-gray-500 text-center mt-1.5">ڈیلیوری چارجز آرڈر کی تصدیق کے وقت بتائے جائیں گے۔</p>
             <button onclick="checkout()" class="mt-3 w-full rounded-xl bg-green-600 hover:bg-green-700 text-white py-3 font-black text-sm flex items-center justify-center gap-2.5 shadow-lg active:scale-[.98] transition">
                 <i class="fa-brands fa-whatsapp text-xl"></i>
                 Send Order on WhatsApp
@@ -1068,7 +1070,7 @@
                         <p class="text-red-600 font-black uppercase tracking-[.18em] text-[8px] sm:text-[9px]">${p.brand}</p>
                         <button onclick="openModal(${product.id})" class="text-left mt-1">
                             <h3 class="font-black uppercase leading-tight text-xs sm:text-sm line-clamp-2 min-h-8 sm:min-h-10">${p.name}</h3>
-                            <p class="urdu text-gray-500 font-semibold text-sm mt-1 line-clamp-1">${p.nameUrdu}</p>
+                            <p lang="ur" dir="rtl" class="urdu text-gray-500 font-semibold text-sm mt-1 line-clamp-1">${p.nameUrdu}</p>
                         </button>
                         <p class="text-[9px] text-gray-400 mt-2">${p.cat}</p>
                         <div class="mt-auto pt-3 flex items-end justify-between gap-2">
@@ -1269,7 +1271,7 @@
                     <div class="h-full min-h-72 flex flex-col items-center justify-center text-center px-8">
                         <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-3xl"><i class="fa-solid fa-basket-shopping"></i></div>
                         <h3 class="font-black text-xl mt-5">Your cart is empty</h3>
-                        <p class="urdu text-gray-500 mt-2">خریداری شروع کرنے کے لیے کوئی پارٹ منتخب کریں</p>
+                        <p lang="ur" dir="rtl" class="urdu text-gray-500 mt-2">خریداری شروع کرنے کے لیے کوئی پارٹ منتخب کریں</p>
                         <button onclick="toggleCart(false); scrollToSection('products')" class="mt-5 rounded-xl bg-red-600 text-white px-5 py-3 font-black text-xs uppercase">Browse Parts</button>
                     </div>
                 `;
@@ -1285,7 +1287,7 @@
                         <div class="flex justify-between gap-2">
                             <div class="min-w-0">
                                 <p class="font-black uppercase text-xs truncate">${escapeHtml(item.name)}</p>
-                                <p class="urdu text-gray-500 text-xs mt-1 truncate">${escapeHtml(item.nameUrdu)}</p>
+                                <p lang="ur" dir="rtl" class="urdu text-gray-500 text-xs mt-1 truncate">${escapeHtml(item.nameUrdu)}</p>
                             </div>
                             <button onclick="removeFromCart(${item.id})" class="text-gray-300 hover:text-red-600 w-8 h-8 flex-shrink-0" aria-label="Remove ${escapeHtml(item.name)}"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
