@@ -1,0 +1,1357 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#dc2626">
+    <meta name="description" content="The Bike Mart — genuine motorcycle spare parts, fancy parts, engine parts and accessories with delivery across Karachi.">
+    <meta name="keywords" content="bike spare parts Karachi, motorcycle parts Pakistan, Honda bike parts, engine parts, fancy bike parts">
+    <meta property="og:title" content="The Bike Mart | Motorcycle Spare Parts Karachi">
+    <meta property="og:description" content="Genuine bike spare parts at competitive prices with WhatsApp ordering and delivery across Karachi.">
+    <meta property="og:type" content="website">
+    <title>The Bike Mart | کراچی کی اسپیئر پارٹس شاپ</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Urdu:wght@400;600;700&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #dc2626;
+            --primary-dark: #991b1b;
+            --ink: #111827;
+            --muted: #6b7280;
+            --surface: #ffffff;
+            --page: #f5f6f8;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: "Roboto", sans-serif;
+            background:
+                radial-gradient(circle at 8% 0%, rgba(220, 38, 38, 0.08), transparent 24rem),
+                var(--page);
+            color: var(--ink);
+            overflow-x: hidden;
+        }
+
+        body.no-scroll { overflow: hidden; }
+        button, input, textarea, select { font: inherit; }
+        button { -webkit-tap-highlight-color: transparent; }
+        .urdu { font-family: "Noto Sans Urdu", sans-serif; }
+
+        .glass {
+            background: rgba(255,255,255,.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(1.035);
+            transition: opacity .75s ease, visibility .75s ease, transform 5s ease;
+        }
+        .hero-slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        .hero-slide::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(5,8,15,.92) 0%, rgba(5,8,15,.7) 38%, rgba(5,8,15,.18) 75%, rgba(5,8,15,.42) 100%),
+                linear-gradient(0deg, rgba(5,8,15,.5), transparent 40%);
+        }
+
+        .product-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            box-shadow: 0 8px 30px rgba(17,24,39,.05);
+            transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-7px);
+            border-color: rgba(220,38,38,.45);
+            box-shadow: 0 22px 45px rgba(17,24,39,.12);
+        }
+        .product-card::before {
+            content: "";
+            position: absolute;
+            width: 9rem;
+            height: 9rem;
+            right: -5rem;
+            top: -5rem;
+            border-radius: 999px;
+            background: rgba(220,38,38,.08);
+            transition: transform .35s ease;
+        }
+        .product-card:hover::before { transform: scale(1.3); }
+        .product-card.is-unavailable .product-image { filter: grayscale(1); opacity: .62; }
+
+        .image-shell {
+            background:
+                radial-gradient(circle at 50% 15%, #fff 0%, #f7f7f8 46%, #eceef1 100%);
+        }
+        .product-image { transition: transform .35s ease; }
+        .product-card:hover .product-image { transform: scale(1.07) rotate(-1deg); }
+
+        .category-chip {
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #374151;
+            transition: all .22s ease;
+        }
+        .category-chip:hover,
+        .category-chip.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 8px 24px rgba(220,38,38,.22);
+        }
+
+        .brand-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            box-shadow: 0 8px 28px rgba(17,24,39,.05);
+            transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+        }
+        .brand-card::after {
+            content: "";
+            position: absolute;
+            inset: auto -35% -55% auto;
+            width: 8rem;
+            height: 8rem;
+            border-radius: 999px;
+            background: rgba(220,38,38,.07);
+            transition: transform .3s ease;
+        }
+        .brand-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(220,38,38,.45);
+            box-shadow: 0 18px 40px rgba(17,24,39,.11);
+        }
+        .brand-card:hover::after { transform: scale(1.25); }
+        .brand-logo-shell {
+            background: linear-gradient(145deg, #ffffff, #f6f7f9);
+        }
+        .brand-logo {
+            transition: transform .28s ease;
+            filter: drop-shadow(0 8px 14px rgba(17,24,39,.08));
+        }
+        .brand-card:hover .brand-logo { transform: scale(1.07); }
+
+        .modal-shell {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 110;
+            padding: 1rem;
+            background: rgba(3,7,18,.8);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-shell.active { display: flex; animation: fadeIn .2s ease; }
+        .modal-panel { animation: scaleIn .25s ease; }
+
+        .cart-panel {
+            top: 1rem;
+            right: 1rem;
+            bottom: 1rem;
+            width: min(400px, calc(100vw - 2rem));
+            border-radius: 1.6rem;
+            transform: translateX(calc(100% + 2rem));
+            transition: transform .32s cubic-bezier(.22,.8,.35,1);
+        }
+        .cart-panel.open { transform: translateX(0); }
+        .cart-scroll-area { min-height: 0; }
+        .delivery-details summary::-webkit-details-marker { display: none; }
+        .delivery-details[open] .delivery-chevron { transform: rotate(180deg); }
+        .cart-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all .25s ease;
+        }
+        .cart-overlay.open { opacity: 1; visibility: visible; }
+
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .3s ease;
+        }
+        .mobile-menu.open { max-height: 40rem; }
+
+        .desktop-dropdown {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: all .2s ease;
+        }
+        .desktop-group:hover .desktop-dropdown,
+        .desktop-group:focus-within .desktop-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast {
+            transform: translate(-50%, 120px);
+            opacity: 0;
+            transition: all .3s ease;
+        }
+        .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+        .skeleton {
+            background: linear-gradient(90deg, #eceff3 25%, #f7f8fa 50%, #eceff3 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.25s infinite;
+        }
+
+        @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+        @keyframes scaleIn { from {opacity:0; transform:scale(.96) translateY(8px)} to {opacity:1; transform:scale(1) translateY(0)} }
+        @keyframes shimmer { to { background-position: -200% 0; } }
+
+        @media (max-width: 767px) {
+            .hero-slide::after {
+                background: linear-gradient(90deg, rgba(5,8,15,.88), rgba(5,8,15,.58)), linear-gradient(0deg, rgba(5,8,15,.5), transparent);
+            }
+            .product-card:hover { transform: none; }
+            .cart-panel {
+                top: auto;
+                right: .5rem;
+                left: .5rem;
+                bottom: .5rem;
+                width: auto;
+                max-height: 88vh;
+                border-radius: 1.5rem;
+                transform: translateY(calc(100% + 1rem));
+            }
+            .cart-panel.open { transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP NOTICE -->
+    <div class="bg-[#080b12] text-white border-b border-red-700/60">
+        <div class="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-center sm:justify-between gap-2 text-[10px] sm:text-xs font-bold">
+            <p class="urdu text-center sm:text-left">
+                <i class="fa-solid fa-truck-fast text-red-500 mr-1"></i>
+                پورے کراچی میں ڈیلیوری — Delivery across Karachi
+            </p>
+            <div class="flex items-center gap-4">
+                <span class="hidden sm:inline text-gray-400"><i class="fa-solid fa-shield-halved mr-1"></i> Carefully Checked Parts</span>
+                <a href="https://wa.me/923332442529" target="_blank" rel="noopener" class="text-green-400 hover:text-green-300">
+                    <i class="fa-brands fa-whatsapp mr-1"></i> 0333 2442529
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="sticky top-0 z-50 glass border-b border-gray-200/80 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 lg:py-4">
+            <div class="flex items-center justify-between gap-3 lg:gap-6">
+                <a href="#top" class="flex items-center gap-2 flex-shrink-0" aria-label="The Bike Mart home">
+                    <img src="logo.png" alt="The Bike Mart logo" class="h-11 sm:h-14 w-auto object-contain" onerror="hideBrokenLogo(this)">
+                    <div id="textLogo" class="hidden leading-none">
+                        <p class="font-black italic text-lg sm:text-2xl tracking-tight">THE <span class="text-red-600">BIKE</span></p>
+                        <p class="font-black italic text-[10px] sm:text-xs tracking-[.32em] text-gray-500">MART</p>
+                    </div>
+                </a>
+
+                <div class="hidden lg:block flex-1 max-w-2xl">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input
+                            id="searchInputDesktop"
+                            type="search"
+                            placeholder="Search by product, brand or category..."
+                            oninput="handleSearch(this.value)"
+                            class="w-full rounded-2xl border-2 border-gray-200 bg-white pl-11 pr-4 py-3 outline-none focus:border-red-600 focus:ring-4 focus:ring-red-100 transition"
+                            aria-label="Search products"
+                        >
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <a href="https://wa.me/923332442529" target="_blank" rel="noopener" class="hidden sm:flex items-center gap-2 rounded-xl bg-green-50 text-green-700 px-3 py-2.5 font-bold text-xs hover:bg-green-100">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        Help
+                    </a>
+
+                    <button onclick="toggleCart(true)" class="relative flex items-center gap-3 rounded-xl bg-gray-900 text-white px-3 sm:px-4 py-2.5 hover:bg-red-600 transition" aria-label="Open shopping cart">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <span class="hidden sm:block text-left leading-tight">
+                            <small class="block text-[9px] text-gray-300 uppercase">Your cart</small>
+                            <strong id="cart-total-header" class="text-xs">Rs. 0</strong>
+                        </span>
+                        <span id="cart-count" class="absolute -top-2 -right-2 min-w-6 h-6 px-1 flex items-center justify-center rounded-full bg-red-600 border-2 border-white text-[10px] font-black">0</span>
+                    </button>
+
+                    <button onclick="toggleMobileMenu()" class="lg:hidden w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-800" aria-label="Open menu">
+                        <i id="mobileMenuIcon" class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="lg:hidden mt-3">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input
+                        id="searchInputMobile"
+                        type="search"
+                        placeholder="پارٹ تلاش کریں... Search parts"
+                        oninput="handleSearch(this.value)"
+                        class="w-full rounded-xl border-2 border-gray-200 bg-white pl-11 pr-4 py-2.5 outline-none focus:border-red-600"
+                        aria-label="Search products"
+                    >
+                </div>
+            </div>
+
+            <div id="mobileMenu" class="mobile-menu lg:hidden">
+                <div class="pt-4 pb-1">
+                    <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <button onclick="showAllProducts(); closeMobileMenu()" class="rounded-xl border border-gray-200 bg-white p-3 text-left"><i class="fa-solid fa-house text-red-600 mr-2"></i>Home</button>
+                        <button onclick="setFilter('category','Body Parts'); closeMobileMenu()" class="rounded-xl border border-gray-200 bg-white p-3 text-left">Body Parts</button>
+                        <button onclick="setFilter('category','Engine Parts'); closeMobileMenu()" class="rounded-xl border border-gray-200 bg-white p-3 text-left">Engine Parts</button>
+                        <button onclick="setFilter('category','Fancy Parts'); closeMobileMenu()" class="rounded-xl border border-gray-200 bg-white p-3 text-left">Fancy Parts</button>
+                        <button onclick="setFilter('category','Nut & Bolts'); closeMobileMenu()" class="rounded-xl border border-gray-200 bg-white p-3 text-left">Nut & Bolts</button>
+                        <button onclick="scrollToSection('contact'); closeMobileMenu()" class="rounded-xl border border-gray-200 bg-white p-3 text-left"><i class="fa-solid fa-phone text-red-600 mr-2"></i>Contact</button>
+                    </div>
+                    <div class="mt-4 border-t border-gray-200 pt-4">
+                        <p class="mb-2 text-[10px] font-black uppercase tracking-[.18em] text-gray-400">Shop by Brand</p>
+                        <div id="mobileBrandMenu" class="grid grid-cols-2 gap-2 text-xs font-bold"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- DESKTOP NAV -->
+    <nav class="hidden lg:block bg-red-600 text-white shadow-lg relative z-40">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="desktop-group relative">
+                    <button class="bg-red-800 px-5 py-3.5 font-black text-xs uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-bars-staggered"></i> Categories <i class="fa-solid fa-chevron-down text-[9px]"></i>
+                    </button>
+                    <div class="desktop-dropdown absolute left-0 top-full min-w-64 bg-white text-gray-800 shadow-2xl border border-gray-100 rounded-b-2xl overflow-hidden">
+                        <button onclick="setFilter('category','Body Parts')" class="w-full text-left px-5 py-3.5 hover:bg-red-50 border-b border-gray-100 font-bold">Body Parts <span class="urdu float-right text-gray-400">باڈی پارٹس</span></button>
+                        <button onclick="setFilter('category','Engine Parts')" class="w-full text-left px-5 py-3.5 hover:bg-red-50 border-b border-gray-100 font-bold">Engine Parts <span class="urdu float-right text-gray-400">انجن پارٹس</span></button>
+                        <button onclick="setFilter('category','Fancy Parts')" class="w-full text-left px-5 py-3.5 hover:bg-red-50 border-b border-gray-100 font-bold">Fancy Parts <span class="urdu float-right text-gray-400">فینسی پارٹس</span></button>
+                        <button onclick="setFilter('category','Nut & Bolts')" class="w-full text-left px-5 py-3.5 hover:bg-red-50 font-bold">Nut & Bolts <span class="urdu float-right text-gray-400">نٹ بولٹ</span></button>
+                    </div>
+                </div>
+
+                <button onclick="showAllProducts()" class="px-5 py-3.5 font-bold text-xs uppercase hover:bg-red-700">Home</button>
+                <button onclick="scrollToSection('products')" class="px-5 py-3.5 font-bold text-xs uppercase hover:bg-red-700">Shop</button>
+
+                <div class="desktop-group relative">
+                    <button class="px-5 py-3.5 font-bold text-xs uppercase hover:bg-red-700">Brands <i class="fa-solid fa-chevron-down ml-1 text-[9px]"></i></button>
+                    <div class="desktop-dropdown absolute left-0 top-full min-w-56 bg-white text-gray-800 shadow-2xl border border-gray-100 rounded-b-2xl overflow-hidden py-2">
+                        <div id="brandDropdown"></div>
+                    </div>
+                </div>
+
+                <button onclick="scrollToSection('why-us')" class="px-5 py-3.5 font-bold text-xs uppercase hover:bg-red-700">Why Us</button>
+                <button onclick="scrollToSection('contact')" class="px-5 py-3.5 font-bold text-xs uppercase hover:bg-red-700">Contact</button>
+            </div>
+            <p class="font-bold text-xs"><i class="fa-solid fa-phone-volume mr-2"></i> Need help? 0333 2442529</p>
+        </div>
+    </nav>
+
+    <main id="top">
+        <!-- HERO -->
+        <section class="relative h-[440px] sm:h-[520px] lg:h-[610px] bg-gray-950 overflow-hidden">
+            <div class="hero-slide active" data-slide="0">
+                <img src="banner1.jpg" alt="Genuine motorcycle spare parts" class="w-full h-full object-cover" onerror="heroFallback(this, 1)">
+            </div>
+            <div class="hero-slide" data-slide="1">
+                <img src="banner2.jpg" alt="Fancy and modified motorcycle parts" class="w-full h-full object-cover" onerror="heroFallback(this, 2)">
+            </div>
+            <div class="hero-slide" data-slide="2">
+                <img src="banner3.jpg" alt="Motorcycle parts delivery across Karachi" class="w-full h-full object-cover" onerror="heroFallback(this, 3)">
+            </div>
+
+            <div class="relative z-10 max-w-7xl mx-auto px-4 h-full flex items-center">
+                <div class="max-w-2xl text-white pt-6">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-[.18em]">
+                        <i class="fa-solid fa-bolt text-yellow-400"></i> Karachi Bike Parts Store
+                    </span>
+                    <h1 class="mt-5 text-4xl sm:text-6xl lg:text-7xl font-black italic uppercase leading-[.95] tracking-tight">
+                        Ride Better.<br><span class="text-red-500">Buy Smarter.</span>
+                    </h1>
+                    <p class="mt-5 text-sm sm:text-lg text-gray-200 max-w-xl leading-relaxed">
+                        Genuine, replacement and fancy motorcycle parts at competitive prices—carefully packed and delivered across Karachi.
+                    </p>
+                    <p class="urdu mt-2 text-base sm:text-xl text-gray-100">بہترین موٹر سائیکل پارٹس، مناسب قیمت اور آسان واٹس ایپ آرڈر</p>
+
+                    <div class="mt-7 flex flex-wrap gap-3">
+                        <button onclick="scrollToSection('products')" class="rounded-2xl bg-red-600 hover:bg-red-700 px-6 py-4 font-black uppercase text-xs tracking-widest shadow-xl shadow-red-950/30 active:scale-95 transition">
+                            Shop Parts <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                        <a href="https://wa.me/923332442529?text=Assalam-o-Alaikum%2C%20I%20need%20help%20finding%20a%20bike%20part." target="_blank" rel="noopener" class="rounded-2xl border border-white/30 bg-white/10 hover:bg-white hover:text-gray-900 px-6 py-4 font-black uppercase text-xs tracking-widest backdrop-blur transition">
+                            <i class="fa-brands fa-whatsapp mr-2"></i> Ask on WhatsApp
+                        </a>
+                    </div>
+
+                    <div class="mt-8 grid grid-cols-3 max-w-xl border border-white/15 rounded-2xl overflow-hidden bg-black/20 backdrop-blur">
+                        <div class="p-3 sm:p-4 border-r border-white/15"><strong class="block text-lg sm:text-2xl">100%</strong><span class="text-[9px] sm:text-xs text-gray-300">Checked Parts</span></div>
+                        <div class="p-3 sm:p-4 border-r border-white/15"><strong class="block text-lg sm:text-2xl">Karachi</strong><span class="text-[9px] sm:text-xs text-gray-300">City Delivery</span></div>
+                        <div class="p-3 sm:p-4"><strong class="block text-lg sm:text-2xl">WhatsApp</strong><span class="text-[9px] sm:text-xs text-gray-300">Easy Ordering</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="changeSlide(-1)" class="hidden sm:flex absolute z-20 left-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-red-600 border border-white/20 text-white items-center justify-center backdrop-blur" aria-label="Previous slide">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button onclick="changeSlide(1)" class="hidden sm:flex absolute z-20 right-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-red-600 border border-white/20 text-white items-center justify-center backdrop-blur" aria-label="Next slide">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <div id="sliderDots" class="absolute z-20 bottom-5 left-1/2 -translate-x-1/2 flex gap-2"></div>
+        </section>
+
+        <!-- TRUST STRIP -->
+        <section class="relative z-20 max-w-7xl mx-auto px-4 -mt-7">
+            <div class="bg-white rounded-3xl shadow-xl border border-gray-100 grid grid-cols-2 lg:grid-cols-4 overflow-hidden">
+                <div class="p-4 sm:p-6 flex items-center gap-3 border-r border-b lg:border-b-0 border-gray-100">
+                    <span class="w-11 h-11 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-motorcycle"></i></span>
+                    <div><strong class="block text-xs sm:text-sm">Bike Specialists</strong><small class="text-gray-500 text-[10px] sm:text-xs">Parts-focused store</small></div>
+                </div>
+                <div class="p-4 sm:p-6 flex items-center gap-3 border-b lg:border-b-0 lg:border-r border-gray-100">
+                    <span class="w-11 h-11 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-comments"></i></span>
+                    <div><strong class="block text-xs sm:text-sm">WhatsApp Support</strong><small class="text-gray-500 text-[10px] sm:text-xs">Fast product help</small></div>
+                </div>
+                <div class="p-4 sm:p-6 flex items-center gap-3 border-r border-gray-100">
+                    <span class="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-box"></i></span>
+                    <div><strong class="block text-xs sm:text-sm">Safe Packing</strong><small class="text-gray-500 text-[10px] sm:text-xs">Protected delivery</small></div>
+                </div>
+                <div class="p-4 sm:p-6 flex items-center gap-3">
+                    <span class="w-11 h-11 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-tags"></i></span>
+                    <div><strong class="block text-xs sm:text-sm">Fair Prices</strong><small class="text-gray-500 text-[10px] sm:text-xs">Retail & wholesale</small></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATEGORIES -->
+        <section class="max-w-7xl mx-auto px-4 pt-14 sm:pt-20">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-7">
+                <div>
+                    <p class="text-red-600 font-black uppercase tracking-[.25em] text-[10px] mb-2">Find faster</p>
+                    <h2 class="text-2xl sm:text-4xl font-black italic uppercase tracking-tight">Shop by Category</h2>
+                    <p class="urdu mt-2 text-gray-500">اپنی ضرورت کے مطابق پارٹس منتخب کریں</p>
+                </div>
+                <button onclick="showAllProducts()" class="text-sm font-black text-red-600 hover:text-red-800">View all products <i class="fa-solid fa-arrow-right ml-1"></i></button>
+            </div>
+
+            <div id="categoryChips" class="flex gap-3 overflow-x-auto pb-3"></div>
+        </section>
+
+        <!-- SHOP BY BRANDS -->
+        <section id="brands" class="max-w-7xl mx-auto px-4 pt-12 sm:pt-16">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-7">
+                <div>
+                    <p class="text-red-600 font-black uppercase tracking-[.25em] text-[10px] mb-2">Trusted names</p>
+                    <h2 class="text-2xl sm:text-4xl font-black italic uppercase tracking-tight">Shop by Brands</h2>
+                    <p class="urdu mt-2 text-gray-500">اپنے پسندیدہ برانڈ کے مطابق پارٹس دیکھیں</p>
+                </div>
+                <button onclick="showAllProducts()" class="text-sm font-black text-red-600 hover:text-red-800">View all brands & parts <i class="fa-solid fa-arrow-right ml-1"></i></button>
+            </div>
+
+            <div id="brandShowcase" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4"></div>
+        </section>
+
+        <!-- PRODUCTS -->
+        <section id="products" class="max-w-7xl mx-auto px-4 py-14 sm:py-20">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-5 mb-7">
+                <div>
+                    <p class="text-red-600 font-black uppercase tracking-[.25em] text-[10px] mb-2">The Bike Mart Collection</p>
+                    <h2 id="pageTitle" class="text-2xl sm:text-4xl font-black italic uppercase tracking-tight">Featured Parts</h2>
+                    <p id="resultsText" class="text-sm text-gray-500 mt-2">Showing available products</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <label class="relative">
+                        <span class="sr-only">Filter stock</span>
+                        <select id="stockFilter" onchange="applyFilters()" class="appearance-none min-w-44 rounded-xl border border-gray-200 bg-white px-4 py-3 pr-10 text-sm font-bold outline-none focus:border-red-600">
+                            <option value="all">All stock</option>
+                            <option value="in">In stock only</option>
+                            <option value="out">Out of stock</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none"></i>
+                    </label>
+                    <label class="relative">
+                        <span class="sr-only">Sort products</span>
+                        <select id="sortSelect" onchange="applyFilters()" class="appearance-none min-w-48 rounded-xl border border-gray-200 bg-white px-4 py-3 pr-10 text-sm font-bold outline-none focus:border-red-600">
+                            <option value="featured">Sort: Featured</option>
+                            <option value="price-low">Price: Low to high</option>
+                            <option value="price-high">Price: High to low</option>
+                            <option value="name">Name: A to Z</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none"></i>
+                    </label>
+                </div>
+            </div>
+
+            <div id="activeFilterBar" class="hidden mb-5 items-center justify-between rounded-2xl bg-red-50 border border-red-100 px-4 py-3">
+                <p id="activeFilterText" class="text-xs sm:text-sm font-bold text-red-800"></p>
+                <button onclick="clearFilters()" class="text-xs font-black text-red-600 hover:underline">Clear filter</button>
+            </div>
+
+            <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6"></div>
+
+            <div id="emptyState" class="hidden text-center bg-white border border-dashed border-gray-300 rounded-3xl p-10 sm:p-16">
+                <div class="w-20 h-20 rounded-full bg-gray-100 mx-auto flex items-center justify-center text-gray-400 text-3xl"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <h3 class="mt-5 text-xl font-black">No matching parts found</h3>
+                <p class="text-gray-500 mt-2">Try another product name, brand, or category.</p>
+                <button onclick="clearFilters()" class="mt-5 rounded-xl bg-red-600 text-white px-5 py-3 font-black text-xs uppercase tracking-wider">Show all products</button>
+            </div>
+        </section>
+
+        <!-- WHY US -->
+        <section id="why-us" class="bg-[#0b0f17] text-white py-16 sm:py-24 relative overflow-hidden">
+            <div class="absolute -top-40 -right-32 w-96 h-96 rounded-full bg-red-600/20 blur-3xl"></div>
+            <div class="max-w-7xl mx-auto px-4 relative">
+                <div class="text-center max-w-2xl mx-auto mb-10">
+                    <p class="text-red-500 font-black uppercase tracking-[.25em] text-[10px] mb-2">Why customers choose us</p>
+                    <h2 class="text-3xl sm:text-5xl font-black italic uppercase">Built for Bike Owners</h2>
+                    <p class="urdu text-gray-300 mt-3">صحیح پارٹ تلاش کرنے سے لے کر آرڈر تک آسان تجربہ</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-5">
+                    <article class="rounded-3xl border border-white/10 bg-white/5 p-7 hover:bg-white/10 transition">
+                        <span class="w-14 h-14 rounded-2xl bg-red-600 flex items-center justify-center text-xl"><i class="fa-solid fa-magnifying-glass-plus"></i></span>
+                        <h3 class="font-black text-xl mt-5">Easy Product Search</h3>
+                        <p class="text-gray-400 text-sm mt-2 leading-relaxed">Search by part name, Urdu name, brand, or category to find products quickly.</p>
+                    </article>
+                    <article class="rounded-3xl border border-white/10 bg-white/5 p-7 hover:bg-white/10 transition">
+                        <span class="w-14 h-14 rounded-2xl bg-red-600 flex items-center justify-center text-xl"><i class="fa-brands fa-whatsapp"></i></span>
+                        <h3 class="font-black text-xl mt-5">Simple WhatsApp Order</h3>
+                        <p class="text-gray-400 text-sm mt-2 leading-relaxed">Add items to your cart, enter delivery details, and send the complete order on WhatsApp.</p>
+                    </article>
+                    <article class="rounded-3xl border border-white/10 bg-white/5 p-7 hover:bg-white/10 transition">
+                        <span class="w-14 h-14 rounded-2xl bg-red-600 flex items-center justify-center text-xl"><i class="fa-solid fa-location-dot"></i></span>
+                        <h3 class="font-black text-xl mt-5">Karachi Delivery</h3>
+                        <p class="text-gray-400 text-sm mt-2 leading-relaxed">Delivery charges depend on location and order size and are confirmed before dispatch.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="max-w-7xl mx-auto px-4 py-16 sm:py-24">
+            <div class="rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-red-600 to-red-800 p-7 sm:p-12 text-white flex flex-col lg:flex-row lg:items-center justify-between gap-8 shadow-2xl shadow-red-900/20 overflow-hidden relative">
+                <div class="absolute right-0 top-0 text-white/10 text-[12rem] leading-none"><i class="fa-solid fa-gears"></i></div>
+                <div class="relative max-w-2xl">
+                    <p class="font-black uppercase tracking-[.22em] text-[10px] text-red-100">Cannot find your part?</p>
+                    <h2 class="text-3xl sm:text-5xl font-black italic uppercase mt-2">Send us a photo on WhatsApp</h2>
+                    <p class="mt-3 text-red-100">Share the part photo and your bike model. Our team can help you check availability.</p>
+                </div>
+                <a href="https://wa.me/923332442529?text=Assalam-o-Alaikum%2C%20I%20want%20to%20check%20availability%20of%20a%20bike%20part." target="_blank" rel="noopener" class="relative whitespace-nowrap rounded-2xl bg-white text-gray-900 px-6 py-4 font-black uppercase text-xs tracking-wider hover:bg-gray-100 shadow-xl">
+                    <i class="fa-brands fa-whatsapp text-green-600 text-lg mr-2"></i> Message Now
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer id="contact" class="bg-[#070a10] text-white pt-14">
+        <div class="max-w-7xl mx-auto px-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-10 pb-12">
+            <div>
+                <div class="text-2xl font-black italic">THE <span class="text-red-600">BIKE</span> MART</div>
+                <p class="text-gray-400 text-sm leading-relaxed mt-4">Motorcycle spare parts, accessories, fancy parts and WhatsApp ordering for customers across Karachi.</p>
+            </div>
+            <div>
+                <h3 class="font-black uppercase text-sm tracking-widest">Quick Links</h3>
+                <div class="mt-4 space-y-3 text-sm text-gray-400">
+                    <button onclick="showAllProducts()" class="block hover:text-white">All Products</button>
+                    <button onclick="setFilter('category','Body Parts')" class="block hover:text-white">Body Parts</button>
+                    <button onclick="setFilter('category','Engine Parts')" class="block hover:text-white">Engine Parts</button>
+                    <button onclick="setFilter('category','Fancy Parts')" class="block hover:text-white">Fancy Parts</button>
+                </div>
+            </div>
+            <div>
+                <h3 class="font-black uppercase text-sm tracking-widest">Customer Support</h3>
+                <div class="mt-4 space-y-3 text-sm text-gray-400">
+                    <p><i class="fa-solid fa-phone text-red-500 w-5"></i> 0333 2442529</p>
+                    <p><i class="fa-brands fa-whatsapp text-green-500 w-5"></i> WhatsApp Orders</p>
+                    <p><i class="fa-solid fa-location-dot text-red-500 w-5"></i> Karachi, Pakistan</p>
+                </div>
+            </div>
+            <div>
+                <h3 class="font-black uppercase text-sm tracking-widest">Order Information</h3>
+                <p class="mt-4 text-gray-400 text-sm leading-relaxed">Delivery charges are usually Rs. 200–500 within Karachi, depending on area and parcel size.</p>
+                <p class="urdu text-gray-400 text-sm mt-3">آرڈر کی تصدیق واٹس ایپ پر کی جائے گی۔</p>
+            </div>
+        </div>
+        <div class="border-t border-white/10">
+            <div class="max-w-7xl mx-auto px-4 py-5 flex flex-col sm:flex-row justify-between gap-2 text-xs text-gray-500">
+                <p>© <span id="currentYear"></span> The Bike Mart. All rights reserved.</p>
+                <p>Prices and availability may change without notice.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- PRODUCT MODAL -->
+    <div id="productModal" class="modal-shell" role="dialog" aria-modal="true" aria-labelledby="modalTitleEng" onclick="modalBackdropClose(event)">
+        <div class="modal-panel bg-white rounded-[1.75rem] sm:rounded-[2.25rem] max-w-5xl w-full max-h-[92vh] overflow-y-auto shadow-2xl relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 z-20 w-11 h-11 rounded-full bg-white shadow-lg border border-gray-100 text-gray-500 hover:text-red-600" aria-label="Close product details">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="grid md:grid-cols-2">
+                <div class="image-shell p-7 sm:p-10 min-h-72 sm:min-h-[470px] flex items-center justify-center rounded-t-[1.75rem] md:rounded-l-[2.25rem] md:rounded-tr-none">
+                    <img id="modalImg" src="" alt="" class="max-h-[390px] max-w-full object-contain drop-shadow-2xl" onerror="productFallback(this)">
+                </div>
+                <div class="p-6 sm:p-10 flex flex-col justify-center">
+                    <div class="flex flex-wrap items-center gap-2 mb-3">
+                        <span id="modalStockBadge" class="px-3 py-1.5 rounded-full text-[10px] font-black uppercase"></span>
+                        <span id="modalCategory" class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-[10px] font-black uppercase"></span>
+                    </div>
+                    <p id="modalBrand" class="text-red-600 font-black text-[10px] uppercase tracking-[.22em]"></p>
+                    <h2 id="modalTitleEng" class="text-2xl sm:text-4xl font-black uppercase leading-tight mt-2"></h2>
+                    <h3 id="modalTitleUrdu" class="urdu text-xl sm:text-3xl font-bold text-gray-500 mt-2"></h3>
+                    <p id="modalDescription" class="text-gray-500 text-sm leading-relaxed mt-5"></p>
+                    <div class="mt-6 flex items-end justify-between gap-4 border-y border-gray-100 py-5">
+                        <div>
+                            <small class="block text-[10px] font-black uppercase tracking-wider text-gray-400">Price</small>
+                            <strong id="modalPrice" class="text-3xl sm:text-4xl font-black text-gray-900"></strong>
+                        </div>
+                        <div id="modalQtyContainer" class="flex items-center rounded-xl border-2 border-gray-200 overflow-hidden">
+                            <button onclick="changeModalQty(-1)" class="w-11 h-11 hover:bg-red-600 hover:text-white font-black" aria-label="Decrease quantity">−</button>
+                            <input id="modalQty" type="number" value="1" min="1" max="99" inputmode="numeric" class="w-14 text-center font-black outline-none" aria-label="Quantity">
+                            <button onclick="changeModalQty(1)" class="w-11 h-11 hover:bg-red-600 hover:text-white font-black" aria-label="Increase quantity">+</button>
+                        </div>
+                    </div>
+                    <button id="modalAddBtn" class="mt-6 w-full rounded-2xl bg-gray-900 hover:bg-red-600 text-white py-4 font-black uppercase tracking-widest text-xs shadow-xl active:scale-[.98] transition">
+                        Add to cart
+                    </button>
+                    <a id="modalAskBtn" href="#" target="_blank" rel="noopener" class="mt-3 w-full rounded-2xl border-2 border-green-600 text-green-700 hover:bg-green-50 py-3.5 font-black text-center text-xs uppercase tracking-wider">
+                        <i class="fa-brands fa-whatsapp mr-2"></i> Ask about this part
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART OVERLAY + SIDEBAR -->
+    <div id="cartOverlay" class="cart-overlay fixed inset-0 bg-black/65 backdrop-blur-sm z-[90]" onclick="toggleCart(false)"></div>
+    <aside id="cartSidebar" class="cart-panel fixed bg-white shadow-2xl z-[100] flex flex-col overflow-hidden" aria-label="Shopping cart">
+        <div class="px-4 py-3.5 bg-gray-950 text-white flex items-center justify-between flex-shrink-0">
+            <div>
+                <p class="font-black italic uppercase text-base">Shopping Cart</p>
+                <p class="urdu text-[10px] text-gray-400 mt-0.5">آپ کی خریداری کی ٹوکری</p>
+            </div>
+            <button onclick="toggleCart(false)" class="w-9 h-9 rounded-full bg-white/10 hover:bg-red-600" aria-label="Close shopping cart"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div id="cartItems" class="cart-scroll-area flex-1 overflow-y-auto p-3.5 space-y-2.5"></div>
+
+        <details id="deliveryDetails" class="delivery-details border-t border-gray-200 bg-gray-50 flex-shrink-0">
+            <summary class="list-none cursor-pointer px-4 py-3 flex items-center justify-between gap-3 select-none">
+                <div>
+                    <h3 class="font-black uppercase text-[11px] tracking-wider">Delivery Details</h3>
+                    <p class="text-[10px] text-gray-500 mt-0.5">Open to enter name, phone and address</p>
+                </div>
+                <i class="delivery-chevron fa-solid fa-chevron-down text-gray-400 transition-transform"></i>
+            </summary>
+            <div class="px-4 pb-4 grid grid-cols-2 gap-2.5">
+                <input id="custName" type="text" placeholder="Full name *" autocomplete="name" class="col-span-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-red-600">
+                <input id="custPhone" type="tel" placeholder="Phone number *" autocomplete="tel" class="col-span-2 sm:col-span-1 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-red-600">
+                <select id="custArea" class="col-span-2 sm:col-span-1 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-red-600">
+                    <option value="">Select area *</option>
+                    <option>Karachi Central</option>
+                    <option>Karachi East</option>
+                    <option>Karachi South</option>
+                    <option>Karachi West</option>
+                    <option>Korangi</option>
+                    <option>Malir</option>
+                    <option>Keamari</option>
+                    <option>Other Karachi Area</option>
+                </select>
+                <textarea id="custAddress" placeholder="Complete delivery address *" autocomplete="street-address" class="col-span-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-red-600 h-16 resize-none"></textarea>
+                <textarea id="custNote" placeholder="Optional note: bike model, color, etc." class="col-span-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-red-600 h-14 resize-none"></textarea>
+            </div>
+        </details>
+
+        <div class="px-4 py-3.5 border-t border-gray-200 bg-white flex-shrink-0">
+            <div class="flex items-center justify-between">
+                <span class="font-bold text-sm text-gray-500">Subtotal</span>
+                <strong id="cartTotal" class="text-xl font-black text-red-600">Rs. 0</strong>
+            </div>
+            <p class="urdu text-[9px] text-gray-500 text-center mt-1.5">ڈیلیوری چارجز آرڈر کی تصدیق کے وقت بتائے جائیں گے۔</p>
+            <button onclick="checkout()" class="mt-3 w-full rounded-xl bg-green-600 hover:bg-green-700 text-white py-3 font-black text-sm flex items-center justify-center gap-2.5 shadow-lg active:scale-[.98] transition">
+                <i class="fa-brands fa-whatsapp text-xl"></i>
+                Send Order on WhatsApp
+            </button>
+        </div>
+    </aside>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast fixed z-[150] left-1/2 bottom-6 rounded-full bg-gray-950 text-white px-5 py-3 shadow-2xl text-xs font-bold flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-green-400"></i>
+        <span id="toastText">Added to cart</span>
+    </div>
+
+    <!-- MOBILE WHATSAPP BUTTON -->
+    <a href="https://wa.me/923332442529" target="_blank" rel="noopener" class="sm:hidden fixed right-4 bottom-4 z-40 w-14 h-14 rounded-full bg-green-600 text-white shadow-2xl flex items-center justify-center text-2xl" aria-label="Contact on WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <script>
+        const WHATSAPP_NUMBER = "923332442529";
+
+        // Main store brands shown in the Brands menus.
+        const storeBrands = ["KAI CHI", "AUTO MAX", "CRLF", "TTR", "SAGA", "CMX"];
+
+        // Brand logo files. Keep these files in the same folder as index.html.
+        const storeBrandLogos = [
+            { name: "CRLF", logo: "crlf.jpeg" },
+            { name: "AUTO MAX", logo: "automax.png" },
+            { name: "CMX", logo: "cmx.png" },
+            { name: "KAI CHI", logo: "kaichi.png" },
+            { name: "SAGA", logo: "saga.jpg" },
+            { name: "STF", logo: "stf.png" },
+            { name: "TTR", logo: "ttr.png" }
+        ];
+
+        // Add or edit products here. Optional fields: description, model, featured.
+        const products = [
+            {
+                id: 1,
+                name: "Kaan Kala",
+                nameUrdu: "کان کالا",
+                price: 195,
+                cat: "Body Parts",
+                brand: "Miscellaneous",
+                inStock: true,
+                featured: true,
+                description: "A practical replacement body part for routine motorcycle repair and maintenance.",
+                img: "images/p1.jpg"
+            },
+            {
+                id: 2,
+                name: "Clutch Catora STF",
+                nameUrdu: "کلچ کٹورا",
+                price: 450,
+                cat: "Engine Parts",
+                brand: "STF",
+                inStock: true,
+                featured: true,
+                description: "STF clutch component designed for reliable replacement and smooth clutch operation.",
+                img: "images/p2.jpg"
+            },
+            {
+                id: 3,
+                name: "Jump Glass Small",
+                nameUrdu: "جمپ گلاس چھوٹا",
+                price: 130,
+                cat: "Body Parts",
+                brand: "Miscellaneous",
+                inStock: true,
+                featured: true,
+                description: "Small-size replacement jump glass. Contact us to check the next availability date.",
+                img: "images/p3.jpg"
+            },
+            {
+                id: 4,
+                name: "Jump Glass Big",
+                nameUrdu: "جمپ گلاس بڑا",
+                price: 220,
+                cat: "Body Parts",
+                brand: "Miscellaneous",
+                inStock: true,
+                featured: true,
+                description: "Large-size replacement jump glass suitable for common motorcycle repair requirements.",
+                img: "images/p4.jpg"
+            },
+            {
+                id: 5,
+                name: "Horn CYT",
+                nameUrdu: "ہارن",
+                price: 255,
+                cat: "Body Parts",
+                brand: "Miscellaneous",
+                inStock: true,
+                featured: true,
+                description: "Replacement motorcycle horn for a clear and dependable road warning sound.",
+                img: "images/p5.jpg"
+            }
+        ];
+
+        const categories = [
+            { name: "All Parts", icon: "fa-border-all" },
+            { name: "Body Parts", icon: "fa-motorcycle" },
+            { name: "Engine Parts", icon: "fa-gears" },
+            { name: "Fancy Parts", icon: "fa-wand-magic-sparkles" },
+            { name: "Nut & Bolts", icon: "fa-screwdriver-wrench" }
+        ];
+
+        let cart = loadCart();
+        let currentSlide = 0;
+        let sliderTimer;
+        let filterState = { type: "all", value: "", search: "" };
+
+        const money = value => `Rs. ${Number(value).toLocaleString("en-PK")}`;
+
+        function escapeHtml(value = "") {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        function safeProduct(id) {
+            return products.find(product => product.id === Number(id));
+        }
+
+        function hideBrokenLogo(img) {
+            img.style.display = "none";
+            document.getElementById("textLogo").classList.remove("hidden");
+        }
+
+        function productFallback(img) {
+            img.onerror = null;
+            img.src = makePlaceholder("Bike Part");
+        }
+
+        function heroFallback(img, number) {
+            img.onerror = null;
+            const gradients = [
+                ["#05070b", "#991b1b"],
+                ["#090d16", "#7f1d1d"],
+                ["#111827", "#b91c1c"]
+            ];
+            const pair = gradients[(number - 1) % gradients.length];
+            img.src = makePlaceholder(`THE BIKE MART • SLIDE ${number}`, 1600, 800, pair[0], pair[1]);
+        }
+
+        function makePlaceholder(text, width = 600, height = 450, colorA = "#f3f4f6", colorB = "#d1d5db") {
+            const safeText = escapeHtml(text).slice(0, 34);
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${colorA}"/><stop offset="1" stop-color="${colorB}"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><g fill="white" opacity=".13"><circle cx="${width * .82}" cy="${height * .22}" r="${height * .25}"/><circle cx="${width * .15}" cy="${height * .85}" r="${height * .18}"/></g><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="${colorA === '#f3f4f6' ? '#6b7280' : '#ffffff'}" font-family="Arial" font-weight="700" font-size="${Math.max(20, width / 24)}">${safeText}</text></svg>`;
+            return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+        }
+
+        function loadCart() {
+            try {
+                const saved = JSON.parse(localStorage.getItem("bikeMartCart") || "[]");
+                return Array.isArray(saved) ? saved.filter(item => products.some(product => product.id === item.id)) : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function saveCart() {
+            localStorage.setItem("bikeMartCart", JSON.stringify(cart));
+        }
+
+        function renderBrands() {
+            const productBrands = [...new Set(products.map(product => product.brand))];
+            const brands = [
+                ...storeBrands,
+                ...productBrands.filter(brand => !storeBrands.includes(brand))
+            ];
+
+            document.getElementById("brandDropdown").innerHTML = brands.map(brand => `
+                <button onclick="setFilter('brand','${escapeHtml(brand)}')" class="w-full text-left px-5 py-3 hover:bg-red-50 font-bold text-sm">
+                    ${escapeHtml(brand)}
+                </button>
+            `).join("");
+
+            const mobileBrandMenu = document.getElementById("mobileBrandMenu");
+            if (mobileBrandMenu) {
+                mobileBrandMenu.innerHTML = brands.map(brand => `
+                    <button onclick="setFilter('brand','${escapeHtml(brand)}'); closeMobileMenu()" class="rounded-xl border border-gray-200 bg-white p-3 text-left hover:border-red-300 hover:bg-red-50">
+                        ${escapeHtml(brand)}
+                    </button>
+                `).join("");
+            }
+        }
+
+        function brandLogoFallback(img) {
+            img.classList.add("hidden");
+            const fallback = img.nextElementSibling;
+            if (fallback) fallback.classList.remove("hidden");
+        }
+
+        function renderBrandShowcase() {
+            const showcase = document.getElementById("brandShowcase");
+            if (!showcase) return;
+
+            showcase.innerHTML = storeBrandLogos.map(brand => `
+                <button onclick="setFilter('brand','${escapeHtml(brand.name)}')" class="brand-card group rounded-2xl sm:rounded-3xl p-3 sm:p-4 text-left min-h-[150px] sm:min-h-[175px] flex flex-col" aria-label="Shop ${escapeHtml(brand.name)} products">
+                    <div class="brand-logo-shell relative z-10 rounded-xl sm:rounded-2xl h-24 sm:h-28 flex items-center justify-center p-4 overflow-hidden border border-gray-100">
+                        <img src="${escapeHtml(brand.logo)}" alt="${escapeHtml(brand.name)} logo" loading="lazy" class="brand-logo max-w-full max-h-full object-contain" onerror="brandLogoFallback(this)">
+                        <span class="hidden text-xl sm:text-2xl font-black italic text-gray-800 text-center">${escapeHtml(brand.name)}</span>
+                    </div>
+                    <div class="relative z-10 mt-3 flex items-center justify-between gap-2">
+                        <div>
+                            <p class="text-[8px] font-black uppercase tracking-[.18em] text-red-600">Shop Brand</p>
+                            <strong class="block mt-1 text-xs sm:text-sm font-black">${escapeHtml(brand.name)}</strong>
+                        </div>
+                        <span class="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center group-hover:bg-red-600 transition">
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </span>
+                    </div>
+                </button>
+            `).join("");
+        }
+
+        function renderCategoryChips() {
+            document.getElementById("categoryChips").innerHTML = categories.map(category => {
+                const count = category.name === "All Parts" ? products.length : products.filter(p => p.cat === category.name).length;
+                const active = filterState.type === "all" && category.name === "All Parts" || filterState.type === "category" && filterState.value === category.name;
+                return `
+                    <button onclick="${category.name === 'All Parts' ? 'showAllProducts()' : `setFilter('category','${category.name}')`}" class="category-chip ${active ? 'active' : ''} min-w-[145px] sm:min-w-[180px] rounded-2xl p-4 text-left flex-shrink-0">
+                        <span class="w-10 h-10 rounded-xl bg-gray-100/80 text-red-600 flex items-center justify-center mb-4"><i class="fa-solid ${category.icon}"></i></span>
+                        <strong class="block text-sm">${category.name}</strong>
+                        <small class="opacity-70 text-[10px]">${count} product${count === 1 ? '' : 's'}</small>
+                    </button>
+                `;
+            }).join("");
+        }
+
+        function getFilteredProducts() {
+            const query = filterState.search.trim().toLocaleLowerCase();
+            let list = [...products];
+
+            if (filterState.type === "category") list = list.filter(p => p.cat === filterState.value);
+            if (filterState.type === "brand") list = list.filter(p => p.brand === filterState.value);
+
+            if (query) {
+                list = list.filter(p => [p.name, p.nameUrdu, p.brand, p.cat, p.description]
+                    .some(value => String(value || "").toLocaleLowerCase().includes(query)));
+            }
+
+            const stock = document.getElementById("stockFilter")?.value || "all";
+            if (stock === "in") list = list.filter(p => p.inStock);
+            if (stock === "out") list = list.filter(p => !p.inStock);
+
+            const sort = document.getElementById("sortSelect")?.value || "featured";
+            if (sort === "price-low") list.sort((a, b) => a.price - b.price);
+            if (sort === "price-high") list.sort((a, b) => b.price - a.price);
+            if (sort === "name") list.sort((a, b) => a.name.localeCompare(b.name));
+            if (sort === "featured") list.sort((a, b) => Number(b.featured) - Number(a.featured) || a.id - b.id);
+
+            return list;
+        }
+
+        function productCard(product) {
+            const p = {
+                ...product,
+                name: escapeHtml(product.name),
+                nameUrdu: escapeHtml(product.nameUrdu),
+                brand: escapeHtml(product.brand),
+                cat: escapeHtml(product.cat),
+                img: escapeHtml(product.img)
+            };
+
+            return `
+                <article class="product-card ${product.inStock ? '' : 'is-unavailable'} rounded-2xl sm:rounded-[1.6rem] p-3 sm:p-4 flex flex-col min-h-full">
+                    <div class="absolute top-3 left-3 z-10 flex flex-col gap-1">
+                        ${product.featured ? '<span class="rounded-full bg-gray-950 text-white px-2.5 py-1 text-[8px] font-black uppercase tracking-wider">Featured</span>' : ''}
+                    </div>
+                    <span class="absolute top-3 right-3 z-10 rounded-full ${product.inStock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} px-2.5 py-1 text-[8px] font-black uppercase">
+                        ${product.inStock ? 'In Stock' : 'Out of Stock'}
+                    </span>
+
+                    <button onclick="openModal(${product.id})" class="image-shell rounded-xl sm:rounded-2xl h-36 sm:h-48 mt-7 flex items-center justify-center p-3 sm:p-5 overflow-hidden" aria-label="View ${p.name}">
+                        <img src="${p.img}" alt="${p.name}" loading="lazy" class="product-image max-w-full max-h-full object-contain drop-shadow-lg" onerror="productFallback(this)">
+                    </button>
+
+                    <div class="pt-4 flex-1 flex flex-col">
+                        <p class="text-red-600 font-black uppercase tracking-[.18em] text-[8px] sm:text-[9px]">${p.brand}</p>
+                        <button onclick="openModal(${product.id})" class="text-left mt-1">
+                            <h3 class="font-black uppercase leading-tight text-xs sm:text-sm line-clamp-2 min-h-8 sm:min-h-10">${p.name}</h3>
+                            <p class="urdu text-gray-500 font-semibold text-sm mt-1 line-clamp-1">${p.nameUrdu}</p>
+                        </button>
+                        <p class="text-[9px] text-gray-400 mt-2">${p.cat}</p>
+                        <div class="mt-auto pt-3 flex items-end justify-between gap-2">
+                            <strong class="text-base sm:text-xl font-black">${money(product.price)}</strong>
+                            <button
+                                onclick="quickAdd(event, ${product.id})"
+                                ${product.inStock ? '' : 'disabled'}
+                                class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${product.inStock ? 'bg-gray-900 hover:bg-red-600 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'} flex items-center justify-center transition"
+                                aria-label="${product.inStock ? `Add ${p.name} to cart` : `${p.name} unavailable`}">
+                                <i class="fa-solid ${product.inStock ? 'fa-plus' : 'fa-ban'}"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        function applyFilters() {
+            const list = getFilteredProducts();
+            const grid = document.getElementById("productGrid");
+            const empty = document.getElementById("emptyState");
+            const title = document.getElementById("pageTitle");
+            const results = document.getElementById("resultsText");
+            const bar = document.getElementById("activeFilterBar");
+            const filterText = document.getElementById("activeFilterText");
+
+            grid.innerHTML = list.map(productCard).join("");
+            grid.classList.toggle("hidden", list.length === 0);
+            empty.classList.toggle("hidden", list.length !== 0);
+
+            let heading = "Featured Parts";
+            if (filterState.type === "category") heading = filterState.value;
+            if (filterState.type === "brand") heading = `${filterState.value} Parts`;
+            if (filterState.search) heading = "Search Results";
+            title.textContent = heading;
+            results.textContent = `${list.length} product${list.length === 1 ? '' : 's'} found`;
+
+            const hasFilter = filterState.type !== "all" || Boolean(filterState.search);
+            bar.classList.toggle("hidden", !hasFilter);
+            bar.classList.toggle("flex", hasFilter);
+            if (hasFilter) {
+                const parts = [];
+                if (filterState.type !== "all") parts.push(`${filterState.type}: ${filterState.value}`);
+                if (filterState.search) parts.push(`search: “${filterState.search}”`);
+                filterText.textContent = `Active ${parts.join(" • ")}`;
+            }
+
+            renderCategoryChips();
+        }
+
+        function setFilter(type, value) {
+            filterState = { ...filterState, type, value };
+            applyFilters();
+            scrollToSection("products");
+        }
+
+        function showAllProducts() {
+            filterState = { type: "all", value: "", search: "" };
+            syncSearchInputs("");
+            const stock = document.getElementById("stockFilter");
+            const sort = document.getElementById("sortSelect");
+            if (stock) stock.value = "all";
+            if (sort) sort.value = "featured";
+            applyFilters();
+            scrollToSection("products");
+        }
+
+        function clearFilters() {
+            showAllProducts();
+        }
+
+        function handleSearch(value) {
+            filterState.search = value;
+            syncSearchInputs(value);
+            applyFilters();
+        }
+
+        function syncSearchInputs(value) {
+            ["searchInputDesktop", "searchInputMobile"].forEach(id => {
+                const input = document.getElementById(id);
+                if (input && input.value !== value) input.value = value;
+            });
+        }
+
+        function openModal(id) {
+            const product = safeProduct(id);
+            if (!product) return;
+
+            document.getElementById("modalImg").src = product.img;
+            document.getElementById("modalImg").alt = product.name;
+            document.getElementById("modalBrand").textContent = product.brand;
+            document.getElementById("modalTitleEng").textContent = product.name;
+            document.getElementById("modalTitleUrdu").textContent = product.nameUrdu;
+            document.getElementById("modalDescription").textContent = product.description || "Contact us for product compatibility and availability details.";
+            document.getElementById("modalCategory").textContent = product.cat;
+            document.getElementById("modalPrice").textContent = money(product.price);
+            document.getElementById("modalQty").value = 1;
+
+            const badge = document.getElementById("modalStockBadge");
+            const qty = document.getElementById("modalQtyContainer");
+            const add = document.getElementById("modalAddBtn");
+            const ask = document.getElementById("modalAskBtn");
+
+            badge.textContent = product.inStock ? "In Stock • موجود ہے" : "Out of Stock • دستیاب نہیں";
+            badge.className = `px-3 py-1.5 rounded-full text-[10px] font-black uppercase ${product.inStock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            qty.classList.toggle("hidden", !product.inStock);
+            qty.classList.toggle("flex", product.inStock);
+            add.disabled = !product.inStock;
+            add.textContent = product.inStock ? "Add to Cart / ٹوکری میں ڈالیں" : "Currently Not Available";
+            add.className = `mt-6 w-full rounded-2xl py-4 font-black uppercase tracking-widest text-xs shadow-xl transition ${product.inStock ? 'bg-gray-900 hover:bg-red-600 text-white active:scale-[.98]' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`;
+            add.onclick = () => {
+                if (!product.inStock) return;
+                const quantity = clampQty(document.getElementById("modalQty").value);
+                addToCart(product.id, quantity);
+                closeModal();
+            };
+            ask.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Assalam-o-Alaikum, I want information about: ${product.name} (${product.nameUrdu}), price ${money(product.price)}.`)}`;
+
+            document.getElementById("productModal").classList.add("active");
+            document.body.classList.add("no-scroll");
+        }
+
+        function closeModal() {
+            document.getElementById("productModal").classList.remove("active");
+            if (!document.getElementById("cartSidebar").classList.contains("open")) document.body.classList.remove("no-scroll");
+        }
+
+        function modalBackdropClose(event) {
+            if (event.target.id === "productModal") closeModal();
+        }
+
+        function clampQty(value) {
+            const number = Number.parseInt(value, 10);
+            return Number.isFinite(number) ? Math.min(99, Math.max(1, number)) : 1;
+        }
+
+        function changeModalQty(delta) {
+            const input = document.getElementById("modalQty");
+            input.value = clampQty(clampQty(input.value) + delta);
+        }
+
+        function quickAdd(event, id) {
+            event.stopPropagation();
+            const product = safeProduct(id);
+            if (!product || !product.inStock) return;
+            addToCart(id, 1);
+        }
+
+        function addToCart(id, qty = 1) {
+            const product = safeProduct(id);
+            if (!product || !product.inStock) return;
+
+            const existing = cart.find(item => item.id === product.id);
+            if (existing) existing.qty = Math.min(99, existing.qty + clampQty(qty));
+            else cart.push({ id: product.id, qty: clampQty(qty) });
+
+            saveCart();
+            updateCart();
+            showToast(`${product.name} added to cart`);
+        }
+
+        function updateCartQty(id, delta) {
+            const item = cart.find(entry => entry.id === Number(id));
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) cart = cart.filter(entry => entry.id !== Number(id));
+            item.qty = Math.min(99, Math.max(1, item.qty));
+            saveCart();
+            updateCart();
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== Number(id));
+            saveCart();
+            updateCart();
+            showToast("Item removed from cart", "fa-trash-can");
+        }
+
+        function getCartDetails() {
+            return cart.map(item => {
+                const product = safeProduct(item.id);
+                return product ? { ...product, qty: clampQty(item.qty) } : null;
+            }).filter(Boolean);
+        }
+
+        function updateCart() {
+            const details = getCartDetails();
+            const list = document.getElementById("cartItems");
+            const totalQty = details.reduce((sum, item) => sum + item.qty, 0);
+            const total = details.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+            document.getElementById("cart-count").textContent = totalQty;
+            document.getElementById("cart-total-header").textContent = money(total);
+            document.getElementById("cartTotal").textContent = money(total);
+
+            if (!details.length) {
+                list.innerHTML = `
+                    <div class="h-full min-h-72 flex flex-col items-center justify-center text-center px-8">
+                        <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-3xl"><i class="fa-solid fa-basket-shopping"></i></div>
+                        <h3 class="font-black text-xl mt-5">Your cart is empty</h3>
+                        <p class="urdu text-gray-500 mt-2">خریداری شروع کرنے کے لیے کوئی پارٹ منتخب کریں</p>
+                        <button onclick="toggleCart(false); scrollToSection('products')" class="mt-5 rounded-xl bg-red-600 text-white px-5 py-3 font-black text-xs uppercase">Browse Parts</button>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = details.map(item => `
+                <article class="rounded-2xl border border-gray-100 bg-white p-3 shadow-sm flex gap-3">
+                    <div class="w-20 h-20 rounded-xl image-shell flex items-center justify-center p-2 flex-shrink-0">
+                        <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.name)}" class="max-w-full max-h-full object-contain" onerror="productFallback(this)">
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex justify-between gap-2">
+                            <div class="min-w-0">
+                                <p class="font-black uppercase text-xs truncate">${escapeHtml(item.name)}</p>
+                                <p class="urdu text-gray-500 text-xs mt-1 truncate">${escapeHtml(item.nameUrdu)}</p>
+                            </div>
+                            <button onclick="removeFromCart(${item.id})" class="text-gray-300 hover:text-red-600 w-8 h-8 flex-shrink-0" aria-label="Remove ${escapeHtml(item.name)}"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                        <div class="mt-3 flex items-center justify-between gap-2">
+                            <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                                <button onclick="updateCartQty(${item.id}, -1)" class="w-8 h-8 hover:bg-gray-100 font-black" aria-label="Decrease quantity">−</button>
+                                <span class="w-8 text-center text-xs font-black">${item.qty}</span>
+                                <button onclick="updateCartQty(${item.id}, 1)" class="w-8 h-8 hover:bg-gray-100 font-black" aria-label="Increase quantity">+</button>
+                            </div>
+                            <strong class="text-red-600">${money(item.price * item.qty)}</strong>
+                        </div>
+                    </div>
+                </article>
+            `).join("");
+        }
+
+        function toggleCart(forceOpen) {
+            const panel = document.getElementById("cartSidebar");
+            const overlay = document.getElementById("cartOverlay");
+            const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : !panel.classList.contains("open");
+            panel.classList.toggle("open", shouldOpen);
+            overlay.classList.toggle("open", shouldOpen);
+            document.body.classList.toggle("no-scroll", shouldOpen || document.getElementById("productModal").classList.contains("active"));
+        }
+
+        function checkout() {
+            const details = getCartDetails();
+            const name = document.getElementById("custName").value.trim();
+            const phone = document.getElementById("custPhone").value.trim();
+            const area = document.getElementById("custArea").value.trim();
+            const address = document.getElementById("custAddress").value.trim();
+            const note = document.getElementById("custNote").value.trim();
+
+            if (!details.length) return showToast("Your cart is empty", "fa-triangle-exclamation");
+            if (!name || !phone || !area || !address) {
+                document.getElementById("deliveryDetails").open = true;
+                return showToast("Please complete all required delivery details", "fa-triangle-exclamation");
+            }
+            if (phone.replace(/\D/g, "").length < 10) {
+                document.getElementById("deliveryDetails").open = true;
+                document.getElementById("custPhone").focus();
+                return showToast("Please enter a valid phone number", "fa-triangle-exclamation");
+            }
+
+            const total = details.reduce((sum, item) => sum + item.price * item.qty, 0);
+            const lines = [
+                "*NEW ORDER — THE BIKE MART*",
+                "────────────────────",
+                `*Customer:* ${name}`,
+                `*Phone:* ${phone}`,
+                `*Area:* ${area}`,
+                `*Address:* ${address}`,
+                "────────────────────",
+                "*ORDER ITEMS:*",
+                ...details.map((item, index) => `${index + 1}. ${item.name} (${item.nameUrdu})\n   ${item.qty} × ${money(item.price)} = *${money(item.qty * item.price)}*`),
+                "────────────────────",
+                `*SUBTOTAL: ${money(total)}*`,
+                "Delivery charges will be confirmed on WhatsApp.",
+                note ? `*Customer Note:* ${note}` : "",
+                "────────────────────",
+                "Please confirm availability and final delivery charges."
+            ].filter(Boolean);
+
+            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
+            window.open(url, "_blank", "noopener");
+        }
+
+        function showToast(message, icon = "fa-circle-check") {
+            const toast = document.getElementById("toast");
+            toast.querySelector("i").className = `fa-solid ${icon} ${icon === 'fa-triangle-exclamation' ? 'text-yellow-400' : 'text-green-400'}`;
+            document.getElementById("toastText").textContent = message;
+            toast.classList.add("show");
+            clearTimeout(showToast.timer);
+            showToast.timer = setTimeout(() => toast.classList.remove("show"), 2600);
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById("mobileMenu");
+            const icon = document.getElementById("mobileMenuIcon");
+            const open = menu.classList.toggle("open");
+            icon.className = `fa-solid ${open ? 'fa-xmark' : 'fa-bars'}`;
+        }
+
+        function closeMobileMenu() {
+            document.getElementById("mobileMenu").classList.remove("open");
+            document.getElementById("mobileMenuIcon").className = "fa-solid fa-bars";
+        }
+
+        function scrollToSection(id) {
+            const section = document.getElementById(id);
+            if (!section) return;
+            const headerHeight = document.querySelector("header").offsetHeight;
+            const top = section.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
+            window.scrollTo({ top, behavior: "smooth" });
+        }
+
+        function buildSliderDots() {
+            const slides = document.querySelectorAll(".hero-slide");
+            document.getElementById("sliderDots").innerHTML = [...slides].map((_, index) => `
+                <button onclick="goToSlide(${index})" class="slider-dot h-2.5 rounded-full bg-white/50 transition-all ${index === 0 ? 'w-8 bg-white' : 'w-2.5'}" aria-label="Go to slide ${index + 1}"></button>
+            `).join("");
+        }
+
+        function goToSlide(index) {
+            const slides = document.querySelectorAll(".hero-slide");
+            const dots = document.querySelectorAll(".slider-dot");
+            currentSlide = (index + slides.length) % slides.length;
+            slides.forEach((slide, i) => slide.classList.toggle("active", i === currentSlide));
+            dots.forEach((dot, i) => {
+                dot.classList.toggle("w-8", i === currentSlide);
+                dot.classList.toggle("w-2.5", i !== currentSlide);
+                dot.classList.toggle("bg-white", i === currentSlide);
+                dot.classList.toggle("bg-white/50", i !== currentSlide);
+            });
+            restartSlider();
+        }
+
+        function changeSlide(direction) {
+            goToSlide(currentSlide + direction);
+        }
+
+        function restartSlider() {
+            clearInterval(sliderTimer);
+            sliderTimer = setInterval(() => goToSlide(currentSlide + 1), 5500);
+        }
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                closeModal();
+                toggleCart(false);
+                closeMobileMenu();
+            }
+        });
+
+        document.getElementById("modalQty").addEventListener("change", event => {
+            event.target.value = clampQty(event.target.value);
+        });
+
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
+        renderBrands();
+        renderBrandShowcase();
+        renderCategoryChips();
+        buildSliderDots();
+        restartSlider();
+        applyFilters();
+        updateCart();
+    </script>
+</body>
+</html>
