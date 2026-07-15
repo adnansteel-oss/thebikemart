@@ -146,7 +146,56 @@ const $=id=>document.getElementById(id), money=v=>`Rs. ${Number(v||0).toLocaleSt
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 function toast(m){$('toastText').textContent=m;$('toast').classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('show'),2800)}
 async function authUser(user){if(!user||user.id!==ADMIN_USER_ID){await sb.auth.signOut();$('loginError').textContent='This account is not authorized for The Bike Mart admin.';$('loginError').classList.remove('hidden');return}$('loginView').classList.add('hidden');$('adminView').classList.remove('hidden');await load()}
-$('loginForm').onsubmit=async e=>{e.preventDefault();$('loginError').classList.add('hidden');$('loginBtn').disabled=true;const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});$('loginBtn').disabled=false;if(error){$('loginError').textContent=error.message;$('loginError').classList.remove('hidden');return}await authUser(data.user)};
+$('loginForm').onsubmit=async e=>{
+ e.preventDefault();
+
+ const errorBox=$('loginError');
+ const btn=$('loginBtn');
+
+ errorBox.textContent='';
+ errorBox.classList.add('hidden');
+ btn.disabled=true;
+ btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Signing In...';
+
+ try{
+  const email=$('email').value.trim();
+  const password=$('password').value;
+
+  if(!email||!password){
+   throw new Error('Please enter your email and password.');
+  }
+
+  const {data,error}=await sb.auth.signInWithPassword({email,password});
+
+  if(error)throw error;
+  if(!data?.user)throw new Error('Sign in completed without a user session. Please try again.');
+
+  await authUser(data.user);
+ }catch(err){
+  console.error('Sign in error:',err);
+  errorBox.textContent=err?.message||'Unable to sign in. Please try again.';
+  errorBox.classList.remove('hidden');
+ }finally{
+  btn.disabled=false;
+  btn.innerHTML='<i class="fa-solid fa-right-to-bracket mr-2"></i>Sign In';
+ }
+};
+window.addEventListener('error',event=>{
+ console.error('Admin page error:',event.error||event.message);
+ const box=$('loginError');
+ if(box && !$('loginView').classList.contains('hidden')){
+  box.textContent='Page error: '+(event.message||'Unknown JavaScript error');
+  box.classList.remove('hidden');
+ }
+});
+window.addEventListener('unhandledrejection',event=>{
+ console.error('Unhandled promise rejection:',event.reason);
+ const box=$('loginError');
+ if(box && !$('loginView').classList.contains('hidden')){
+  box.textContent='Connection error: '+(event.reason?.message||String(event.reason||'Unknown error'));
+  box.classList.remove('hidden');
+ }
+});
 async function logout(){await sb.auth.signOut();location.reload()}
 async function init(){const {data:{session}}=await sb.auth.getSession();if(session)await authUser(session.user)}
 async function load(){const {data,error}=await sb.from('products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});$('loading').classList.add('hidden');if(error){toast('Load failed: '+error.message);return}products=data||[];$('sTotal').textContent=products.length;$('sStock').textContent=products.filter(x=>x.in_stock).length;$('sFeatured').textContent=products.filter(x=>x.featured).length;$('sHidden').textContent=products.filter(x=>!x.is_active).length;render()}
@@ -446,7 +495,7 @@ $('productForm').onsubmit=async e=>{
  }finally{
   $('saveBtn').disabled=false;
  }
-};const {error}=id?await sb.from('products').update(payload).eq('id',id):await sb.from('products').insert(payload);if(error)throw error;closeForm();toast(id?'Product updated':'Product added');await load()}catch(err){toast('Save failed: '+err.message)}finally{$('saveBtn').disabled=false}};
+};
 async function del(id){const p=products.find(x=>x.id===Number(id));if(!p||!confirm(`Delete "${p.name}"?`))return;const {error}=await sb.from('products').delete().eq('id',id);if(error)return toast('Delete failed: '+error.message);toast('Product deleted');await load()}
 init();
 </script>
